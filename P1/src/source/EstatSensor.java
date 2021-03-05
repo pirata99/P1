@@ -30,11 +30,6 @@ public class EstatSensor {
     ArrayList<Double> info_Capturada_Centre; //agafar size sensor i per cada Centre veure infoCapturada
 
 
-
-
-
-
-
     private double cost_transmissio; //MINIMIZARLA
 
     private double quantitat_informacio; //MAXIMIZARLA
