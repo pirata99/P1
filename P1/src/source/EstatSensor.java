@@ -25,6 +25,7 @@ public class EstatSensor {
     ArrayList<Double> RecibeMaxSensor; //cada sensor puede recibir el doble de su capacidad (si cap = 2,
     //puede recibir 4
 
+
     double capacitat_Centre; //capacitat centre es de 150 Mb/s
 
     ArrayList<Double> info_Capturada_Centre; //agafar size sensor i per cada Centre veure infoCapturada
