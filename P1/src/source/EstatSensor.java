@@ -74,12 +74,22 @@ public class EstatSensor {
     GETTERS
      */
 
-    public int getNConexionesS() { //numero conexiones sensor
-        return conexionesS.size();
+    public void getNConexionesS() { //numero conexiones sensor
+        for (int i = 0; i < conexionesS.size(); ++i) {
+            System.out.println("Sensor " + i + ": ");
+            for (int j = 0; j < conexionesS.get(i).size(); ++j) {
+                System.out.println(j + " ");
+            }
+        }
     }
 
-    public int getNConexionesCD() { //numero conexiones CentroDatos
-        return conexionesCD.size();
+    public void getNConexionesCD() { //numero conexiones CentroDatos
+        for (int i = 0; i < conexionesS.size(); ++i) {
+            System.out.println("Sensor " + i + ": ");
+            for (int j = 0; j < conexionesS.get(i).size(); ++j) {
+                System.out.println(j);
+            }
+        }
     }
 
     public Integer getInfoEmmagatzemadaSensors(int num_sensor) {
