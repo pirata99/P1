@@ -1,11 +1,8 @@
 package src.source;
 
-import IA.Red.Centro;
 import IA.Red.CentrosDatos;
-import IA.Red.Sensor;
 import IA.Red.Sensores;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class EstatSensor {
@@ -17,27 +14,26 @@ public class EstatSensor {
     static Sensores sens; //Conjunto de sensores
     static CentrosDatos cd; //Conjunto de centros de datos
 
-    static ArrayList<ArrayList<Sensor>> conexionesS; //conexiones actuales de un sensor
-    static ArrayList<ArrayList<Sensor>> SensorsAccessibles; //SensoresAccesibles de los Sensores (todos los sensores excepto los que esten llenos)
+    ArrayList<Integer> transmissionesSC; //conexiones que hace un sensor o centro a otro sensor o centro
 
-    static ArrayList<ArrayList<Centro>> conexionesCD;
-    static ArrayList<ArrayList<Centro>> CentrosAccessibles; //Centros accessibles de los Centros (todos los centros excepto los que ya tengan capacitat 150).
+    //del 0 al 99 nos referimos a sensores, del 100 al 10X nos referimos a centros (podrían ser caracteres tmb)
 
-    ArrayList<Integer> info_Capturada_Sensor; //agafar size sensor i per cada sensor veure infoCapturada
+    ArrayList<Integer> numConectadosSC; //num de sensores o centros que tiene conectados 1 sensor o centro
+
+
+    ArrayList<Double> info_Capturada_SC; //agafar size sensor o centro i ver la info capturada de cada uno
 
     /* INFO
 
      //cada centro de datos puede recibir hasta 150 Mb/s
 
-    ArrayList<Integer> ConexionesCentroDatos; //un centro de datos puede recibir hasta 25 conexiones
+     //un centro de datos puede recibir hasta 25 conexiones
 
-    ArrayList<Double> RecibeMaxSensor; //cada sensor puede recibir el doble de su capacidad (si cap = 2,
+     //cada sensor puede recibir el doble de su capacidad (si cap = 2,
     //puede recibir 4
     */
 
-    static final double capacitat_Centre = 150; //capacitat centre es de 150 Mb/s
-
-    ArrayList<Integer> info_Capturada_Centre; //agafar size sensor i per cada Centre veure infoCapturada
+    final double capacitat_Centre = 150; //capacitat centre es de 150 Mb/s
 
 
     private double cost_transmissio; //MINIMIZARLA
@@ -52,30 +48,22 @@ public class EstatSensor {
         sens = new Sensores(numSensores, seedSens);
         cd = new CentrosDatos(numCent, seedCent);
 
-        conexionesS = new ArrayList<ArrayList<Sensor>>();
-        for (int i = 0; i < numSensores; ++i) {
-            ArrayList<Sensor> conexS = new ArrayList<Sensor>();
-            conexionesS.add(conexS);
+        transmissionesSC = new ArrayList<Integer>();
+        for (int i = 0; i < numSensores + numCent; ++i) {
+            transmissionesSC.add(-1);
         }
 
-        conexionesCD = new ArrayList<ArrayList<Centro>>();
-        for (int j = 0; j < numCent; ++j) {
-            ArrayList<Centro> conexC = new ArrayList<>();
-            conexionesCD.add(conexC);
+        numConectadosSC = new ArrayList<Integer>();
+        for (int j = 0; j < numSensores+numCent; ++j) {
+            numConectadosSC.add(0);
         }
 
         //ArrayList<Integer> info_Capturada_Sensor; //agafar size sensor i per cada sensor veure infoCapturada
 
-        info_Capturada_Sensor = new ArrayList<Integer>();
+        info_Capturada_SC = new ArrayList<Double>();
 
         for (int i = 0; i < numSensores; ++i) {
-            Integer infoS = 0;
-            info_Capturada_Sensor.add(infoS);
-        }
-
-        for (int j = 0; j < numCent; ++j) {
-            Integer infoC = 0;
-            info_Capturada_Centre.add(infoC);
+            info_Capturada_SC.add((double) 0);
         }
     }
 
@@ -84,11 +72,11 @@ public class EstatSensor {
         sens = state.sens;
         cd = state.cd;
 
-        conexionesS = new ArrayList<ArrayList<Sensor>>(state.conexionesS);
-        conexionesCD = new ArrayList<ArrayList<Centro>>(state.conexionesCD);
+        transmissionesSC = new ArrayList<Integer>(state.transmissionesSC);
+        numConectadosSC = new ArrayList<Integer>(state.numConectadosSC);
 
-        info_Capturada_Sensor = new ArrayList<Integer>(state.info_Capturada_Sensor);
-        info_Capturada_Centre = new ArrayList<Integer>(state.info_Capturada_Centre);
+        info_Capturada_SC = new ArrayList<Double>(state.info_Capturada_SC);
+
 
     }
 
@@ -114,31 +102,22 @@ public class EstatSensor {
      */
 
     public void getNConexionesS() { //numero conexiones sensor
-        for (int i = 0; i < conexionesS.size(); ++i) {
+        for (int i = 0; i < transmissionesSC.size(); ++i) {
             System.out.println("Sensor " + i + ": ");
-            for (int j = 0; j < conexionesS.get(i).size(); ++j) {
-                System.out.println(j + " ");
-            }
         }
     }
 
     public void getNConexionesCD() { //numero conexiones CentroDatos
-        for (int i = 0; i < conexionesS.size(); ++i) {
+        for (int i = 0; i < numConectadosSC.size(); ++i) {
             System.out.println("Sensor " + i + ": ");
-            for (int j = 0; j < conexionesS.get(i).size(); ++j) {
-                System.out.println(j);
-            }
         }
     }
 
-    public Integer getInfoEmmagatzemadaSensors(int num_sensor) {
-        return info_Capturada_Sensor.get(num_sensor);
+    public Double getInfoEmmagatzemadaSC(int num_sensor) {
+        return info_Capturada_SC.get(num_sensor);
     }
 
 
-    public int getInfoEmmagatzemadaCentroDatos(int num_centroDatos) {
-        return info_Capturada_Sensor.get(num_centroDatos);
-    }
 
 
 
