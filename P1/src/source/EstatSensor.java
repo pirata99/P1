@@ -14,7 +14,7 @@ public class EstatSensor {
     static Sensores sens; //Conjunto de sensores
     static CentrosDatos cd; //Conjunto de centros de datos
 
-    ArrayList<Integer> transmissionesSC; //conexiones que hace un sensor o centro a otro sensor o centro
+    ArrayList<Integer> transmissionesSC; //conexiones que hace un sensor a otro sensor o centro
 
     //del 0 al 99 nos referimos a sensores, del 100 al 10X nos referimos a centros (podrían ser caracteres tmb)
 
@@ -101,22 +101,50 @@ public class EstatSensor {
     GETTERS
      */
 
-    public void getNConexionesS() { //numero conexiones sensor
-        for (int i = 0; i < transmissionesSC.size(); ++i) {
-            System.out.println("Sensor " + i + ": ");
-        }
+    public Integer getTransmissionSC(int id) { //numero conexiones sensor
+
+        System.out.println("Sensor " + id + ": " + transmissionesSC.get(id));
+        return transmissionesSC.get(id);
+
     }
 
-    public void getNConexionesCD() { //numero conexiones CentroDatos
-        for (int i = 0; i < numConectadosSC.size(); ++i) {
-            System.out.println("Sensor " + i + ": ");
-        }
+    public Integer getNConexionesCD(int id) { //numero conexiones CentroDatos
+
+        System.out.println("Sensor " + id + ": " + numConectadosSC.get(id));
+        return numConectadosSC.get(id);
     }
 
     public Double getInfoEmmagatzemadaSC(int num_sensor) {
         return info_Capturada_SC.get(num_sensor);
     }
 
+     /*
+    SETTERS
+     */
+
+    public void setTransmissionSC(int idO, int idD) { //idO es id origen, idD es destino
+        //este operador envia info a un sensor o a un centro
+        //hemos de tener en cuenta cual puede ser el más optimo
+
+        if ((getNConexionesCD(idD) <= 3) && (getInfoEmmagatzemadaSC(idD) <= sens.get(idD).getCapacidad()*2)) {
+                transmissionesSC.set(idO, idD);
+                int count = getNConexionesCD(idD);
+                numConectadosSC.set(idD, count++);
+                double info = getInfoEmmagatzemadaSC(idD);
+                info_Capturada_SC.set(idD, info+sens.get(idO).getCapacidad());
+        }
+
+
+
+
+
+    }
+
+
+
+    public void setInfoEmmagatzemadaSC(int num_sensor) {
+
+    }
 
 
 
