@@ -66,6 +66,8 @@ public class EstatSensor {
             info_Capturada_SC.add((double) 0);
         }
 
+        cost_transmissio = 0;
+
         for (int s = 0; s < numSensores; ++s) {
             int proper = -1; //aquesta variable et marca el centre més proper a un sensor en concret
             Double distMin = -1.; //aquesta variable marca la distancia minima que hi ha d'un sensor a un altre
@@ -91,7 +93,7 @@ public class EstatSensor {
             }
         }
 
-        /*
+        /* CONECTA SENSOR A OTRO
         if ((getNConexionesCD(idD) <= 3) && (getInfoEmmagatzemadaSC(idD) <= sens.get(idD).getCapacidad()*2)) {
             transmissionesSC.set(idO, idD);
             int count = getNConexionesCD(idD);
