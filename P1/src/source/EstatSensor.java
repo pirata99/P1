@@ -62,9 +62,61 @@ public class EstatSensor {
 
         info_Capturada_SC = new ArrayList<Double>();
 
-        for (int i = 0; i < numSensores; ++i) {
+        for (int i = 0; i < numSensores+numCent; ++i) {
             info_Capturada_SC.add((double) 0);
         }
+
+        for (int s = 0; s < numSensores; ++s) {
+            int proper = -1; //aquesta variable et marca el centre més proper a un sensor en concret
+            Double distMin = -1.; //aquesta variable marca la distancia minima que hi ha d'un sensor a un altre
+
+            for (int c = 0; c < numCent; ++c) {
+                double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), cd.get(c).getCoordX(), cd.get(c).getCoordY());
+                if ((distMin == -1 || dist < distMin) && numConectadosSC.get(numSensores + c) < 25) {
+                    distMin = dist;
+                    proper = c;
+                }
+            }
+
+
+            if (distMin != -1) { //si s'ha pogut connectar a algun centre:
+                double repTotal = getInfoEmmagatzemadaSC(numSensores+proper) + sens.get(s).getCapacidad();
+                info_Capturada_SC.set(numSensores+proper, repTotal);
+                //una vegada ja hem mirat tot, finalment fem la conexió de sensor a centre
+                numConectadosSC.set(numSensores+proper, getNConexionesCD(numSensores+proper)+1);
+                transmissionesSC.set(s, numSensores+proper);
+                double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), cd.get(proper).getCoordX(), cd.get(proper).getCoordY());
+                cost_transmissio += Math.pow(dist, 2) * sens.get(s).getCapacidad(); //DIST^2 X volumenDadesS
+
+            }
+        }
+
+        /*
+        if ((getNConexionesCD(idD) <= 3) && (getInfoEmmagatzemadaSC(idD) <= sens.get(idD).getCapacidad()*2)) {
+            transmissionesSC.set(idO, idD);
+            int count = getNConexionesCD(idD);
+            numConectadosSC.set(idD, count++);
+            double info = getInfoEmmagatzemadaSC(idD);
+            info_Capturada_SC.set(idD, info+sens.get(idO).getCapacidad());
+        }
+
+         */
+
+
+    }
+
+    private double distSC(int coordX, int coordY, int coordX1, int coordY1) {
+
+        int distX = coordX - coordX1;
+        int distY = coordY - coordY1;
+
+        double resX = Math.pow(distX, 2);
+        double resY = Math.pow(distY, 2);
+
+        double res = Math.sqrt(resX+resY);
+
+        return res;
+
     }
 
     public EstatSensor(EstatSensor state) {
