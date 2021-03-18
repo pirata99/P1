@@ -16,12 +16,12 @@ public class EstatSensor {
 
     ArrayList<Integer> transmissionesSC; //conexiones que hace un sensor a otro sensor o centro
 
-    //del 0 al 99 nos referimos a sensores, del 100 al 10X nos referimos a centros (podrían ser caracteres tmb)
+    //del 0 al numSensores nos referimos a sensores, del 100 al 10X nos referimos a centros (podrían ser caracteres tmb)
 
     ArrayList<Integer> numConectadosSC; //num de sensores o centros que tiene conectados 1 sensor o centro
 
 
-    ArrayList<Double> info_Capturada_SC; //agafar size sensor o centro i ver la info capturada de cada uno
+    ArrayList<Integer> info_Capturada_SC; //agafar size sensor o centro i ver la info capturada de cada uno
 
     /* INFO
 
@@ -60,13 +60,23 @@ public class EstatSensor {
 
         //ArrayList<Integer> info_Capturada_Sensor; //agafar size sensor i per cada sensor veure infoCapturada
 
-        info_Capturada_SC = new ArrayList<Double>();
+        info_Capturada_SC = new ArrayList<Integer>(numSensores+numCent);
 
-        for (int i = 0; i < numSensores+numCent; ++i) {
-            info_Capturada_SC.add((double) 0);
+
+
+        for (int i = 0; i < numSensores; ++i) {
+            int max = (int) (sens.get(i).getCapacidad()*2);
+            info_Capturada_SC.add((int) sens.get(i).getCapacidad());
+        }
+        for (int i = numSensores; i < numSensores+numCent; ++i) {
+            info_Capturada_SC.add(0);
         }
 
         cost_transmissio = 0;
+
+        Queue<Integer> conectadosACentro = new LinkedList<>();
+        Queue<Integer> NoConectadosACentro = new LinkedList<>();
+        ArrayList<Boolean> conectaAcentro = new ArrayList<Boolean>(numSensores);
 
         for (int s = 0; s < numSensores; ++s) {
             int proper = -1; //aquesta variable et marca el centre més proper a un sensor en concret
@@ -80,17 +90,30 @@ public class EstatSensor {
                 }
             }
 
-
             if (distMin != -1) { //si s'ha pogut connectar a algun centre:
-                double repTotal = getInfoEmmagatzemadaSC(numSensores+proper) + sens.get(s).getCapacidad();
+                int repTotal = (int) (getInfoEmmagatzemadaSC(numSensores+proper) + sens.get(s).getCapacidad());
                 info_Capturada_SC.set(numSensores+proper, repTotal);
                 //una vegada ja hem mirat tot, finalment fem la conexió de sensor a centre
                 numConectadosSC.set(numSensores+proper, getNConexionesCD(numSensores+proper)+1);
                 transmissionesSC.set(s, numSensores+proper);
                 double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), cd.get(proper).getCoordX(), cd.get(proper).getCoordY());
                 cost_transmissio += Math.pow(dist, 2) * sens.get(s).getCapacidad(); //DIST^2 X volumenDadesS
-
+                //conectaAcentro.set(s,true);
+                conectadosACentro.add(s);
             }
+
+            else {
+                NoConectadosACentro.add(s);
+            }
+        }
+        int id_sensor;
+        while (!NoConectadosACentro.isEmpty()) {
+            id_sensor = NoConectadosACentro.remove();
+            conectadosACentro = iniConectaSensores(conectadosACentro, id_sensor);
+
+
+
+
         }
 
         /* CONECTA SENSOR A OTRO
@@ -104,7 +127,19 @@ public class EstatSensor {
 
          */
 
+    }
 
+    private Queue<Integer> iniConectaSensores (Queue<Integer> disponibles, int id_Sensor) {
+        int destino = disponibles.peek();
+        transmissionesSC.set(id_Sensor, destino);
+        int count = getNConexionesCD(destino)+1;
+        numConectadosSC.set(destino, count);
+        info_Capturada_SC.set(destino, (int) (getInfoEmmagatzemadaSC(destino) + sens.get(id_Sensor).getCapacidad()));
+        if(count == 3) {
+            disponibles.remove();
+        }
+
+        return disponibles;
     }
 
     private double distSC(int coordX, int coordY, int coordX1, int coordY1) {
@@ -129,7 +164,7 @@ public class EstatSensor {
         transmissionesSC = new ArrayList<Integer>(state.transmissionesSC);
         numConectadosSC = new ArrayList<Integer>(state.numConectadosSC);
 
-        info_Capturada_SC = new ArrayList<Double>(state.info_Capturada_SC);
+        info_Capturada_SC = new ArrayList<Integer>(state.info_Capturada_SC);
 
 
     }
@@ -155,27 +190,27 @@ public class EstatSensor {
     GETTERS
      */
 
-    public Integer getTransmissionSC(int id) { //numero conexiones sensor
+    public int getTransmissionSC(int id) { //numero conexiones sensor
 
-        System.out.println("Sensor " + id + ": " + transmissionesSC.get(id));
+        System.out.println("Sensor " + id + ": Transmissiones :" + transmissionesSC.get(id));
         return transmissionesSC.get(id);
 
     }
 
-    public Integer getNConexionesCD(int id) { //numero conexiones CentroDatos
+    public int getNConexionesCD(int id) { //numero conexiones CentroDatos
 
-        System.out.println("Sensor " + id + ": " + numConectadosSC.get(id));
+        //System.out.println("Centro " + id + ": Conexiones :" + numConectadosSC.get(id));
         return numConectadosSC.get(id);
     }
 
-    public Double getInfoEmmagatzemadaSC(int num_sensor) {
+    public int getInfoEmmagatzemadaSC(int num_sensor) {
         return info_Capturada_SC.get(num_sensor);
     }
 
      /*
     SETTERS
      */
-
+/*
     public void setTransmissionSC(int idO, int idD) { //idO es id origen, idD es destino
         //este operador envia info a un sensor o a un centro
         //hemos de tener en cuenta cual puede ser el más optimo
@@ -187,13 +222,8 @@ public class EstatSensor {
                 double info = getInfoEmmagatzemadaSC(idD);
                 info_Capturada_SC.set(idD, info+sens.get(idO).getCapacidad());
         }
-
-
-
-
-
     }
-
+*/
 
 
     public void setInfoEmmagatzemadaSC(int num_sensor) {
