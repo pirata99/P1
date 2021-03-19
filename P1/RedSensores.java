@@ -11,18 +11,16 @@ public class RedSensores {
 
     public static void main(String[] args){
         Sensores s = new Sensores(100,1234);
-        CentrosDatos cd = new CentrosDatos(25,4567);
+        CentrosDatos cd = new CentrosDatos(2,4567);
 
         int numSensores = 100;
         int seed = 1234;
-        int numCent = 25;
+        int numCent = 2;
         int seedC = 4567;
 
         EstatSensor estat = new EstatSensor(numSensores, seed, numCent, seedC);
 
-        for (int i = 0; i < s.size(); ++i) {
-            System.out.println(s.get(i).getCapacidad());
-        }
+        System.out.println("Imprimer algo");
         //Test test = new Test();
         //estat.generaSolInicial1();
         //estat.generaSolInicial2();

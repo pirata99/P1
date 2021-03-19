@@ -77,8 +77,8 @@ public class EstatSensor {
         Queue<Integer> conectadosACentro = new LinkedList<>();
         Queue<Integer> NoConectadosACentro = new LinkedList<>();
         ArrayList<Boolean> conectaAcentro = new ArrayList<>(numSensores);
-        //Estado inicial 1: todos los sensores estan conectados a centros, los sensores que no se conectan , se conectan a un sensor cualquiera
-
+        //Estado inicial 1: todos los sensores estan conectados a centros mas cercano, los sensores que no se conectan , se conectan a un sensor cualquiera
+        /*
         for (int s = 0; s < numSensores; ++s) {
             int proper = -1; //aquesta variable et marca el centre més proper a un sensor en concret
             Double distMin = -1.; //aquesta variable marca la distancia minima que hi ha d'un sensor a un altre
@@ -113,6 +113,8 @@ public class EstatSensor {
             conectadosACentro = iniConectaSensores(conectadosACentro, id_sensor);
 
         }
+        */
+
 
         /* CONECTA SENSOR A OTRO
         if ((getNConexionesCD(idD) <= 3) && (getInfoEmmagatzemadaSC(idD) <= sens.get(idD).getCapacidad()*2)) {
@@ -126,12 +128,12 @@ public class EstatSensor {
 
          */
 
-
-        //Estado inicial 2: sensores se conectan de manera random o que se conecte al centro 0..1..2
+        /*
+        //Estado inicial 2: sensores se conectan al centro 0..1..2
         int centroAss = 0;
         for (int s = 0; s < numSensores; ++s) {
             int centroAssignado = -1; //centro al que se va a conectar el sensor
-            Double distMin = -1.; //aquesta variable marca la distancia minima que hi ha d'un sensor a un altre
+            //Double distMin = -1.; //aquesta variable marca la distancia minima que hi ha d'un sensor a un altre
             boolean trobat = false;
 
             for (int c = 0; c < numCent && !trobat; ++c) {
@@ -158,16 +160,55 @@ public class EstatSensor {
             else { //conecta sensor a sensor
                 NoConectadosACentro.add(s);
             }
-
-
-
         }
+        */
 
+        //Estado inicial 3: sensores se conectan de manera random a centros
 
+        for (int s = 0; s < numSensores; ++s) {
+            int centroAssignado = -1; //centro al que se va a conectar el sensor
+            //Double distMin = -1.; //aquesta variable marca la distancia minima que hi ha d'un sensor a un altre
+            int i = 0;
+            while (centroAssignado == -1 && i < 10) {
+                Random r = new Random();
+                int centroRandom = r.nextInt(numCent);
+                if (numConectadosSC.get(numSensores + centroRandom) < 25) {
+                    centroAssignado = centroRandom;
+                    System.out.println("he que estoy connected");
+                }
+                ++i;
+            }
 
+            if (centroAssignado != -1) {
+                transmissionesSC.set(s, numSensores + centroAssignado);
+                numConectadosSC.set(numSensores + centroAssignado, getNConexionesCD(numSensores + centroAssignado) + 1);
+                int repTotal = (int) (getInfoEmmagatzemadaSC(numSensores + centroAssignado) + sens.get(s).getCapacidad());
+                info_Capturada_SC.set(numSensores + centroAssignado, repTotal);
+                double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), cd.get(centroAssignado).getCoordX(), cd.get(centroAssignado).getCoordY());
+                cost_transmissio += Math.pow(dist, 2) * sens.get(s).getCapacidad(); //DIST^2 X volumenDadesS
 
+            }
+
+            else { //conecta sensor a sensor
+                boolean trobat = false;
+                while (!trobat) {
+                    Random r = new Random();
+                    int sensorRandom = r.nextInt(numSensores);
+                    if ((getNConexionesCD(sensorRandom) < 3) && (getInfoEmmagatzemadaSC(sensorRandom) <= sens.get(sensorRandom).getCapacidad() * 2)) {
+                        transmissionesSC.set(s, sensorRandom);
+                        int count = getNConexionesCD(sensorRandom)+1;
+                        numConectadosSC.set(sensorRandom, count);
+                        double info = getInfoEmmagatzemadaSC(sensorRandom);
+                        info_Capturada_SC.set(sensorRandom, (int) (info + sens.get(s).getCapacidad()));
+                        trobat = true;
+                        System.out.println("El sensor " + s +  " se ha conectado al sensor " + sensorRandom);
+                    }
+                }
+            }
+        }
     }
 
+    //copia
     public EstatSensor(EstatSensor state) {
 
         sens = state.sens;
@@ -180,7 +221,6 @@ public class EstatSensor {
 
         cost_transmissio = 0;
         quantitat_informacio = 0;
-
 
     }
 
@@ -215,7 +255,7 @@ public class EstatSensor {
 
 
 
-
+//OPERADORS
 
     public void envia_info() {} //este operador envia info a un sensor o a un centro
     //hemos de tener en cuenta cual puede ser el más optimo
