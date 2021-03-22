@@ -174,7 +174,7 @@ public class EstatSensor {
                 int centroRandom = r.nextInt(numCent);
                 if (numConectadosSC.get(numSensores + centroRandom) < 25) {
                     centroAssignado = centroRandom;
-                    System.out.println("he que estoy connected");
+                    //System.out.println("he que estoy connected");
                 }
                 ++i;
             }
@@ -200,8 +200,11 @@ public class EstatSensor {
                         numConectadosSC.set(sensorRandom, count);
                         double info = getInfoEmmagatzemadaSC(sensorRandom);
                         info_Capturada_SC.set(sensorRandom, (int) (info + sens.get(s).getCapacidad()));
+                        double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), sens.get(sensorRandom).getCoordX(), sens.get(sensorRandom).getCoordY());
+                        cost_transmissio += Math.pow(dist, 2) * sens.get(s).getCapacidad(); //DIST^2 X volumenDadesS
                         trobat = true;
                         System.out.println("El sensor " + s +  " se ha conectado al sensor " + sensorRandom);
+                        System.out.println("Ahora mismo tengo un coste de " + cost_transmissio);
                     }
                 }
             }
@@ -223,9 +226,27 @@ public class EstatSensor {
         quantitat_informacio = 0;
 
     }
+    /* HEURISTICS */
+
+    public double getHeuristic1() {
+        return cost_transmissio;
+    }
+
+    public double getHeuristic2() {
+        return cost_transmissio;
+    }
+
 
     /*OPERADORES*/
+    //LOS OPERADORES SIEMPRE TIENEN QUE GENERAR UN ESTADO SOLUCIÓN, HAY QUE TENER EN CUENTA QUE CUANDO CAMBIAS EL ESTADO, MODIFICAS EL HEURISTICO(COSTE)
 
+    //1. SWAP, ES DECIR, CAMBIA UN SENSOR QUE ESTA CONECTADO A ALGO POR OTRO ALGO
+    //2. ELIMINAR CONEXION DE UN SENSOR A ALGO I AÑADIRLA EN OTRO LADO
+
+
+
+
+    /*
     private Queue<Integer> iniConectaSensores (Queue<Integer> disponibles, int id_Sensor) {
         int destino = disponibles.peek();
         transmissionesSC.set(id_Sensor, destino);
@@ -238,6 +259,8 @@ public class EstatSensor {
 
         return disponibles;
     }
+
+     */
 
     private double distSC(int coordX, int coordY, int coordX1, int coordY1) {
 
@@ -252,13 +275,6 @@ public class EstatSensor {
 
     }
 
-
-
-
-//OPERADORS
-
-    public void envia_info() {} //este operador envia info a un sensor o a un centro
-    //hemos de tener en cuenta cual puede ser el más optimo
 
 
     /*
