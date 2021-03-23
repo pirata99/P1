@@ -136,8 +136,8 @@ public class EstatSensor {
 
         if ((getNConexionesCD(idD) <= 3) && (getInfoEmmagatzemadaSC(idD) <= sens.get(idD).getCapacidad()*2)) {
             transmissionesSC.set(idO, idD);
-            int count = getNConexionesCD(idD);
-            numConectadosSC.set(idD, count++);
+            int count = getNConexionesCD(idD)+1;
+            numConectadosSC.set(idD, count);
             double info = getInfoEmmagatzemadaSC(idD);
             info_Capturada_SC.set(idD, (int) (info+sens.get(idO).getCapacidad()));
         }
@@ -145,10 +145,12 @@ public class EstatSensor {
     private Queue<Integer> iniConectaSensores (Queue<Integer> disponibles, int id_Sensor) {
         //busca un sensor cualquiera disponible
         int destino = disponibles.peek();
+
         transmissionesSC.set(id_Sensor, destino);
         int count = getNConexionesCD(destino)+1;
         numConectadosSC.set(destino, count);
         info_Capturada_SC.set(destino, (int) (getInfoEmmagatzemadaSC(destino) + sens.get(id_Sensor).getCapacidad()));
+        System.out.println("El sensor" +id_Sensor+ " se ha conectado al sensor " + destino);
         if(count == 3) {
             disponibles.remove();
         }
@@ -163,7 +165,7 @@ public class EstatSensor {
 
         for (int s = 0; s < numSensors; ++s) {
             int proper = -1; //aquesta variable et marca el centre més proper a un sensor en concret
-            Double distMin = -1.; //aquesta variable marca la distancia minima que hi ha d'un sensor a un altre
+            double distMin = -1.; //aquesta variable marca la distancia minima que hi ha d'un sensor a un altre
 
             for (int c = 0; c < numCentros; ++c) {
                 double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), cd.get(c).getCoordX(), cd.get(c).getCoordY());
@@ -183,10 +185,12 @@ public class EstatSensor {
                 cost_transmissio += Math.pow(dist, 2) * sens.get(s).getCapacidad(); //DIST^2 X volumenDadesS
                 //conectaAcentro.set(s,true);
                 conectadosACentro.add(s);
+                System.out.println("El sensor" + s +" se ha conectado al centro " + proper);
             }
 
             else { //conecta sensor a sensor
                 NoConectadosACentro.add(s);
+                System.out.println("Soy el sensor "+  s + "y no he encontrado centro");
             }
         }
         int id_sensor;
@@ -219,7 +223,7 @@ public class EstatSensor {
                 info_Capturada_SC.set(numSensors + centroAssignado, repTotal);
                 double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), cd.get(centroAssignado).getCoordX(), cd.get(centroAssignado).getCoordY());
                 cost_transmissio += Math.pow(dist, 2) * sens.get(s).getCapacidad(); //DIST^2 X volumenDadesS
-
+                System.out.println("El sensor" + s +" se ha conectado al centro " + centroAssignado);
             }
 
             else { //conecta sensor a sensor
@@ -227,7 +231,7 @@ public class EstatSensor {
                 while (!trobat) {
                     Random r = new Random();
                     int sensorRandom = r.nextInt(numSensors);
-                    if ((getNConexionesCD(sensorRandom) < 3) && (getInfoEmmagatzemadaSC(sensorRandom) <= sens.get(sensorRandom).getCapacidad() * 2)) {
+                    if ((getNConexionesCD(sensorRandom) < 3) && (getInfoEmmagatzemadaSC(sensorRandom) + sens.get(s).getCapacidad() <= sens.get(sensorRandom).getCapacidad() * 2)) {
                         transmissionesSC.set(s, sensorRandom);
                         int count = getNConexionesCD(sensorRandom)+1;
                         numConectadosSC.set(sensorRandom, count);
@@ -236,7 +240,9 @@ public class EstatSensor {
                         double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), sens.get(sensorRandom).getCoordX(), sens.get(sensorRandom).getCoordY());
                         cost_transmissio += Math.pow(dist, 2) * sens.get(s).getCapacidad(); //DIST^2 X volumenDadesS
                         trobat = true;
-
+                        System.out.println("El sensor" +s+ " se ha conectado al sensor " + sensorRandom);
+                        System.out.println("La info en datos del sensor " +sensorRandom+ " es la siguiente: "+ getInfoEmmagatzemadaSC(sensorRandom));
+                        System.out.println("Su capacidad es " + sens.get(sensorRandom).getCapacidad());
                     }
                 }
             }
@@ -265,7 +271,7 @@ public class EstatSensor {
             nextSensor = transmissionesSC.get(i);
             if(checkMaxConexiones(nextSensor)) return false;
             int puntoPartida = nextSensor;
-            ArrayList<Integer> camino = new ArrayList<Integer>();
+            ArrayList<Integer> camino = new ArrayList<>();
             camino.add(puntoPartida);
             //miramos que en el camino no hayan bucles y que el camino este conectado a centro
             while(nextSensor <= numSensors) {
@@ -309,6 +315,36 @@ public class EstatSensor {
     //1. SWAP, ES DECIR, CAMBIA UN SENSOR QUE ESTA CONECTADO A ALGO POR OTRO ALGO
     //2. ELIMINAR CONEXION DE UN SENSOR A ALGO I AÑADIRLA EN OTRO LADO (SIEMPRE I CUANDO MEJORE EL COSTE I MAXIMIZE LA INFO)
 
+    //los operadores tienen que generar estados validos
+    //Han de explorar el espacio de búsqueda
+
+
+    private void swap_ConexioSC (int id_sensor) {
+        for (int c = numSensors; c < numSensors+numCentros; ++c) {
+
+        }
+    }
+
+    private void swap_ConexioSS (int id_sensor) {
+
+
+    }
+
+    private void swap (int id_sensor) { //esta mira cual es el tipo de swap que hay que hacer
+       if (getTransmissionSC(id_sensor) < numSensors) swap_ConexioSS(id_sensor);
+       else swap_ConexioSC(id_sensor);
+    }
+
+    /*
+
+    private void canvia_ConexioSensor (int id_sensor, int nuevo_destino) {
+        int id_que_transmite = getTransmissionSC(id_sensor);
+        double dist = distSC()
+
+
+    }
+
+     */
 
 
 
