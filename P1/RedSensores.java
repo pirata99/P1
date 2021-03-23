@@ -17,14 +17,18 @@ public class RedSensores {
         int seed = 1234;
         int numCent = 2;
         int seedC = 4567;
-
-        EstatSensor estat = new EstatSensor(numSensores, seed, numCent, seedC);
+//        System.out.println(args[1]);
+//        int tipoIni = Integer.parseInt(args[1]);
+        int tipoIni = 2;
+        EstatSensor estat = new EstatSensor(tipoIni, numSensores, seed, numCent, seedC);
 
         System.out.println("Imprimer algo");
         //Test test = new Test();
         //estat.generaSolInicial1();
         //estat.generaSolInicial2();
     }
+
+
 
 
 }
