@@ -258,7 +258,7 @@ public class EstatSensor {
 
     private boolean checkMaxConexiones(int nextSensor){
         //devuelve true si es correcto
-        System.out.println("Sensor "+ nextSensor+ "con num" +getNConexionesCD(nextSensor));
+       // System.out.println("Sensor "+ nextSensor+ "con num" +getNConexionesCD(nextSensor));
         if(nextSensor<numSensors) return getNConexionesCD(nextSensor) > 3;
         else return getNConexionesCD(nextSensor) > 25;
     }
@@ -270,7 +270,7 @@ public class EstatSensor {
         for(int i = 0; i < numSensors; i++){
             nextSensor = transmissionesSC.get(i);
             if(checkMaxConexiones(nextSensor)) {
-                System.out.println("Maximo con " + nextSensor);
+                //System.out.println("Maximo con " + nextSensor);
                 return false;
             }
             int puntoPartida = nextSensor;
@@ -279,10 +279,10 @@ public class EstatSensor {
             //miramos que en el camino no hayan bucles y que el camino este conectado a centro
             while(nextSensor < numSensors) {
                 if(nextSensor == -1){ //||// camino.contains(nextSensor)){
-                    System.out.println(nextSensor);
+                    //System.out.println(nextSensor);
                     return false;
                 }
-                System.out.println("Estoy en " + nextSensor);
+                //System.out.println("Estoy en " + nextSensor);
                 nextSensor = transmissionesSC.get(nextSensor);
                 camino.add(nextSensor);
             }
@@ -336,26 +336,106 @@ public class EstatSensor {
                 minDist = dist;
             }
         }
-        if (centroAssig != getTransmissionSC(id_sensor)) {
-            double maxDist = -1;
-            int sensorAssig = -1;
-            for (int s = 0; s < numSensors; ++s) {
-                if (getTransmissionSC(s) == centroAssig) {
-                    double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), sens.get(centroAssig).getCoordX(), sens.get(centroAssig).getCoordY());
-                    if ((dist > maxDist && maxDist != -1) || maxDist == -1) {
-                        sensorAssig = s;
-                        maxDist = dist;
+        if (numConectadosSC.get(centroAssig) < 25) {
+            if (centroAssig != getTransmissionSC(id_sensor)) {
+                int centroAnterior = getTransmissionSC(id_sensor);
+                int countAnt = getNConexionesCD(centroAnterior)-1;
+                int new_storageAnterior = getInfoEmmagatzemadaSC(centroAnterior)- getInfoEmmagatzemadaSC(id_sensor);
+                numConectadosSC.set(centroAnterior, countAnt);
+                info_Capturada_SC.set(centroAnterior, new_storageAnterior);
+
+                int countNew = getNConexionesCD(centroAssig)+1;
+                int new_storageNew = getInfoEmmagatzemadaSC(centroAssig) + getInfoEmmagatzemadaSC(id_sensor);
+                numConectadosSC.set(centroAssig, countNew);
+                transmissionesSC.set(id_sensor, centroAssig);
+                info_Capturada_SC.set(centroAssig, new_storageNew);
+            }
+        }
+        else {
+            if (centroAssig != getTransmissionSC(id_sensor)) {
+                double maxDist = distSC(sens.get(id_sensor).getCoordX(), sens.get(id_sensor).getCoordY(), sens.get(centroAssig).getCoordX(), sens.get(centroAssig).getCoordY());
+                int sensorAssig = -1;
+                for (int s = 0; s < numSensors; ++s) {
+                    if (getTransmissionSC(s) == centroAssig) {
+                        double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), sens.get(centroAssig).getCoordX(), sens.get(centroAssig).getCoordY());
+                        if ((dist > maxDist && maxDist != -1)) {
+                            sensorAssig = s;
+                            maxDist = dist;
+                        }
                     }
                 }
+                int centroAnterior = getTransmissionSC(id_sensor);
+                int countAnt = getNConexionesCD(centroAnterior)-1;
+                int new_storageAnterior = getInfoEmmagatzemadaSC(centroAnterior)- getInfoEmmagatzemadaSC(id_sensor);
+                numConectadosSC.set(centroAnterior, countAnt);
+                info_Capturada_SC.set(centroAnterior, new_storageAnterior);
+
+                int countNew = getNConexionesCD(centroAssig)+1;
+                int new_storageNew = getInfoEmmagatzemadaSC(centroAssig) + getInfoEmmagatzemadaSC(id_sensor);
+                numConectadosSC.set(centroAssig, countNew);
+                transmissionesSC.set(id_sensor, centroAssig);
+                transmissionesSC.set(sensorAssig, centroAnterior);
+                info_Capturada_SC.set(centroAssig, new_storageNew);
             }
-            int centroAct = getTransmissionSC(id_sensor);
-            transmissionesSC.set(id_sensor, centroAssig);
-            transmissionesSC.set(sensorAssig, centroAct);
         }
     }
 
 
     private void swap_ConexioSS (int id_sensor) {
+        int Sensor_cercano = -1;
+        double distMin = -1;
+        for (int s = 0; s < numSensors; ++s) {
+            if (s != id_sensor) {
+                double dist = distSC(sens.get(id_sensor).getCoordX(), sens.get(id_sensor).getCoordY(), sens.get(s).getCoordX(), sens.get(s).getCoordY());
+                if ((dist < distMin && distMin != -1) || distMin == -1) {
+                    Sensor_cercano = s;
+                    distMin = dist;
+                }
+            }
+        }
+        if (numConectadosSC.get(Sensor_cercano) < 3) {
+            if (Sensor_cercano != getTransmissionSC(id_sensor)) {
+                int sensorAnterior = getTransmissionSC(id_sensor);
+                int countAnt = getNConexionesCD(sensorAnterior)-1;
+                int new_storageAnterior = getInfoEmmagatzemadaSC(sensorAnterior)- getInfoEmmagatzemadaSC(id_sensor);
+                numConectadosSC.set(sensorAnterior, countAnt);
+                info_Capturada_SC.set(sensorAnterior, new_storageAnterior);
+
+                int countNew = getNConexionesCD(Sensor_cercano)+1;
+                int new_storageNew = getInfoEmmagatzemadaSC(Sensor_cercano) + getInfoEmmagatzemadaSC(id_sensor);
+                numConectadosSC.set(Sensor_cercano, countNew);
+                transmissionesSC.set(id_sensor, Sensor_cercano);
+                info_Capturada_SC.set(Sensor_cercano, new_storageNew);
+            }
+        }
+
+        else {
+            if (Sensor_cercano != getTransmissionSC(id_sensor)) {
+                double maxDist = distSC(sens.get(id_sensor).getCoordX(), sens.get(id_sensor).getCoordY(), sens.get(Sensor_cercano).getCoordX(), sens.get(Sensor_cercano).getCoordY());
+                int sensorAssig = -1;
+                for (int s = 0; s < numSensors; ++s) {
+                    if (getTransmissionSC(s) == Sensor_cercano) {
+                        double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), sens.get(Sensor_cercano).getCoordX(), sens.get(Sensor_cercano).getCoordY());
+                        if ((dist > maxDist && maxDist != -1)) {
+                            sensorAssig = s;
+                            maxDist = dist;
+                        }
+                    }
+                }
+                int SensorAnterior = getTransmissionSC(id_sensor);
+                int countAnt = getNConexionesCD(SensorAnterior)-1;
+                int new_storageAnterior = getInfoEmmagatzemadaSC(SensorAnterior)- getInfoEmmagatzemadaSC(id_sensor);
+                numConectadosSC.set(SensorAnterior, countAnt);
+                info_Capturada_SC.set(SensorAnterior, new_storageAnterior);
+
+                int countNew = getNConexionesCD(Sensor_cercano)+1;
+                int new_storageNew = getInfoEmmagatzemadaSC(Sensor_cercano) + getInfoEmmagatzemadaSC(id_sensor);
+                numConectadosSC.set(Sensor_cercano, countNew);
+                transmissionesSC.set(id_sensor, Sensor_cercano);
+                transmissionesSC.set(sensorAssig, SensorAnterior);
+                info_Capturada_SC.set(Sensor_cercano, new_storageNew);
+            }
+        }
 
 
     }
