@@ -134,7 +134,7 @@ public class EstatSensor {
         //este operador envia info a un sensor o a un centro
         //hemos de tener en cuenta cual puede ser el más optimo
 
-        if ((getNConexionesCD(idD) <= 3) && (getInfoEmmagatzemadaSC(idD) <= sens.get(idD).getCapacidad()*2)) {
+        if ((getNConexionesCD(idD) < 2) && (getInfoEmmagatzemadaSC(idD) <= sens.get(idD).getCapacidad()*2)) {
             transmissionesSC.set(idO, idD);
             int count = getNConexionesCD(idD)+1;
             numConectadosSC.set(idD, count);
@@ -151,7 +151,7 @@ public class EstatSensor {
         numConectadosSC.set(destino, count);
         info_Capturada_SC.set(destino, (int) (getInfoEmmagatzemadaSC(destino) + sens.get(id_Sensor).getCapacidad()));
         System.out.println("El sensor" +id_Sensor+ " se ha conectado al sensor " + destino);
-        if(count == 3) {
+        if(count == 2) {
             disponibles.remove();
         }
         return disponibles;
@@ -223,7 +223,7 @@ public class EstatSensor {
                 info_Capturada_SC.set(numSensors + centroAssignado, repTotal);
                 double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), cd.get(centroAssignado).getCoordX(), cd.get(centroAssignado).getCoordY());
                 cost_transmissio += Math.pow(dist, 2) * sens.get(s).getCapacidad(); //DIST^2 X volumenDadesS
-                System.out.println("El sensor" + s +" se ha conectado al centro " + centroAssignado);
+                System.out.println("El sensor " + s +" se ha conectado al centro " + centroAssignado);
             }
 
             else { //conecta sensor a sensor
@@ -231,7 +231,8 @@ public class EstatSensor {
                 while (!trobat) {
                     Random r = new Random();
                     int sensorRandom = r.nextInt(numSensors);
-                    if ((getNConexionesCD(sensorRandom) < 3) && (getInfoEmmagatzemadaSC(sensorRandom) + sens.get(s).getCapacidad() <= sens.get(sensorRandom).getCapacidad() * 2)) {
+                    if ((getNConexionesCD(sensorRandom) < 2) && (getInfoEmmagatzemadaSC(sensorRandom) + sens.get(s).getCapacidad() <= sens.get(sensorRandom).getCapacidad() * 2)
+                            && (transmissionesSC.get(sensorRandom)!=1) && (sensorRandom!=s)) {
                         transmissionesSC.set(s, sensorRandom);
                         int count = getNConexionesCD(sensorRandom)+1;
                         numConectadosSC.set(sensorRandom, count);
@@ -241,8 +242,8 @@ public class EstatSensor {
                         cost_transmissio += Math.pow(dist, 2) * sens.get(s).getCapacidad(); //DIST^2 X volumenDadesS
                         trobat = true;
                         System.out.println("El sensor" +s+ " se ha conectado al sensor " + sensorRandom);
-                        System.out.println("La info en datos del sensor " +sensorRandom+ " es la siguiente: "+ getInfoEmmagatzemadaSC(sensorRandom));
-                        System.out.println("Su capacidad es " + sens.get(sensorRandom).getCapacidad());
+                        //System.out.println("La info en datos del sensor " +sensorRandom+ " es la siguiente: "+ getInfoEmmagatzemadaSC(sensorRandom));
+                        //System.out.println("Su capacidad es " + sens.get(sensorRandom).getCapacidad());
                     }
                 }
             }
@@ -260,7 +261,9 @@ public class EstatSensor {
 
     private boolean checkMaxConexiones(int nextSensor){
         //devuelve true si es correcto
-        return 3 <= getNConexionesCD(nextSensor);
+        System.out.println("Sensor "+ nextSensor+ "con num" +getNConexionesCD(nextSensor));
+        if(nextSensor<numSensors) return getNConexionesCD(nextSensor) > 3;
+        else return getNConexionesCD(nextSensor) > 25;
     }
 
     public boolean estadoValido(){
@@ -269,14 +272,20 @@ public class EstatSensor {
         //para cada sensor
         for(int i = 0; i < numSensors; i++){
             nextSensor = transmissionesSC.get(i);
-            if(checkMaxConexiones(nextSensor)) return false;
+            if(checkMaxConexiones(nextSensor)) {
+                System.out.println("Maximo con " + nextSensor);
+                return false;
+            }
             int puntoPartida = nextSensor;
             ArrayList<Integer> camino = new ArrayList<>();
-            camino.add(puntoPartida);
+            //camino.add(puntoPartida);
             //miramos que en el camino no hayan bucles y que el camino este conectado a centro
-            while(nextSensor <= numSensors) {
-                if(nextSensor == -1 || camino.contains(nextSensor)) return false;
-
+            while(nextSensor < numSensors) {
+                if(nextSensor == -1){ //||// camino.contains(nextSensor)){
+                    System.out.println(nextSensor);
+                    return false;
+                }
+                System.out.println("Estoy en " + nextSensor);
                 nextSensor = transmissionesSC.get(nextSensor);
                 camino.add(nextSensor);
             }

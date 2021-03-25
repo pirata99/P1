@@ -13,16 +13,17 @@ public class RedSensores {
         Sensores s = new Sensores(100,1234);
         CentrosDatos cd = new CentrosDatos(2,4567);
 
-        int numSensores = 100;
+        int numSensores = 50;
         int seed = 1234;
-        int numCent = 2;
+        int numCent = 1;
         int seedC = 4567;
 //        System.out.println(args[1]);
 //        int tipoIni = Integer.parseInt(args[1]);
         int tipoIni = 2;
         EstatSensor estat = new EstatSensor(tipoIni, numSensores, seed, numCent, seedC);
+        boolean valido= estat.estadoValido();
 
-        System.out.println("Imprimer algo");
+        System.out.println(valido);
         //Test test = new Test();
         //estat.generaSolInicial1();
         //estat.generaSolInicial2();
