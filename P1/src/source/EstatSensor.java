@@ -325,7 +325,7 @@ public class EstatSensor {
     //Han de explorar el espacio de búsqueda
 
 
-    private void swap_ConexioSC (int id_sensor) {
+    public void swap_ConexioSC (int id_sensor, int id_sensor2) {
         //En esta accion cambiar dos sensores que estan conectados a dos centros diferentes
         int centroAssig = -1;
         double minDist = -1;
@@ -380,6 +380,19 @@ public class EstatSensor {
         }
     }
 
+    private void actualizaInfoTransmit(int id_sensor_partida) {
+        int nextSensor = id_sensor_partida;
+        int infoPrimera = info_Capturada_SC.get(id_sensor_partida);
+        int suma = 0;
+        while (nextSensor < numSensors) {
+            double infoEnviadaBasica = sens.get(nextSensor).getCapacidad();
+            suma += (int) infoEnviadaBasica;
+            info_Capturada_SC.set(nextSensor, infoPrimera + suma);
+            nextSensor = transmissionesSC.get(nextSensor);
+        }
+//      next sensor ya es un centro
+        info_Capturada_SC.set(nextSensor, infoPrimera + suma);
+    }
 
     private void swap_ConexioSS (int id_sensor) {
         int Sensor_cercano = -1;
@@ -396,20 +409,18 @@ public class EstatSensor {
         if (numConectadosSC.get(Sensor_cercano) < 3) {
             if (Sensor_cercano != getTransmissionSC(id_sensor)) {
                 int sensorAnterior = getTransmissionSC(id_sensor);
-                int countAnt = getNConexionesCD(sensorAnterior)-1;
-                int new_storageAnterior = getInfoEmmagatzemadaSC(sensorAnterior)- getInfoEmmagatzemadaSC(id_sensor);
+                int countAnt = getNConexionesCD(sensorAnterior) - 1;
+                int new_storageAnterior = getInfoEmmagatzemadaSC(sensorAnterior) - getInfoEmmagatzemadaSC(id_sensor);
                 numConectadosSC.set(sensorAnterior, countAnt);
                 info_Capturada_SC.set(sensorAnterior, new_storageAnterior);
 
-                int countNew = getNConexionesCD(Sensor_cercano)+1;
+                int countNew = getNConexionesCD(Sensor_cercano) + 1;
                 int new_storageNew = getInfoEmmagatzemadaSC(Sensor_cercano) + getInfoEmmagatzemadaSC(id_sensor);
                 numConectadosSC.set(Sensor_cercano, countNew);
                 transmissionesSC.set(id_sensor, Sensor_cercano);
                 info_Capturada_SC.set(Sensor_cercano, new_storageNew);
             }
-        }
-
-        else {
+        } else {
             if (Sensor_cercano != getTransmissionSC(id_sensor)) {
                 double maxDist = distSC(sens.get(id_sensor).getCoordX(), sens.get(id_sensor).getCoordY(), sens.get(Sensor_cercano).getCoordX(), sens.get(Sensor_cercano).getCoordY());
                 int sensorAssig = -1;
@@ -423,12 +434,12 @@ public class EstatSensor {
                     }
                 }
                 int SensorAnterior = getTransmissionSC(id_sensor);
-                int countAnt = getNConexionesCD(SensorAnterior)-1;
-                int new_storageAnterior = getInfoEmmagatzemadaSC(SensorAnterior)- getInfoEmmagatzemadaSC(id_sensor);
+                int countAnt = getNConexionesCD(SensorAnterior) - 1;
+                int new_storageAnterior = getInfoEmmagatzemadaSC(SensorAnterior) - getInfoEmmagatzemadaSC(id_sensor);
                 numConectadosSC.set(SensorAnterior, countAnt);
                 info_Capturada_SC.set(SensorAnterior, new_storageAnterior);
 
-                int countNew = getNConexionesCD(Sensor_cercano)+1;
+                int countNew = getNConexionesCD(Sensor_cercano) + 1;
                 int new_storageNew = getInfoEmmagatzemadaSC(Sensor_cercano) + getInfoEmmagatzemadaSC(id_sensor);
                 numConectadosSC.set(Sensor_cercano, countNew);
                 transmissionesSC.set(id_sensor, Sensor_cercano);
@@ -436,14 +447,28 @@ public class EstatSensor {
                 info_Capturada_SC.set(Sensor_cercano, new_storageNew);
             }
         }
+    }
 
+    public void swap_ConexioSS (int id_sensor, int id_sensor2) {
+//        En esta accion se intercambian sensores
+//        hay que actualizar:
+//        transmissiones (conexion)
+//        info retransmitida por el sensor al que te conectas
+//        info recibida por los centros
+        int aux_transmissions = getTransmissionSC(id_sensor);
+        transmissionesSC.set(id_sensor, getTransmissionSC(id_sensor2));
+        actualizaInfoTransmit(id_sensor);
+        transmissionesSC.set(id_sensor2, aux_transmissions);
+        actualizaInfoTransmit(id_sensor2);
 
     }
 
-    private void swap (int id_sensor) { //esta mira cual es el tipo de swap que hay que hacer
-        if (getTransmissionSC(id_sensor) < numSensors) swap_ConexioSS(id_sensor);
-        else swap_ConexioSC(id_sensor);
-    }
+
+//    private void swap (int id_sensor) { //esta mira cual es el tipo de swap que hay que hacer
+//        if (getTransmissionSC(id_sensor) < numSensors) swap_ConexioSS(id_sensor);
+//        else swap_ConexioSC(id_sensor);
+//    }
+
 
     /*
     private void canvia_ConexioSensor (int id_sensor, int nuevo_destino) {
