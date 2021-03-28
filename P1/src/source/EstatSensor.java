@@ -34,9 +34,9 @@ public class EstatSensor {
     final double capacitat_Centre = 150; //capacitat centre es de 150 Mb/s
 
 
-    private double cost_transmissio; //MINIMIZARLA
+    public double cost_transmissio; //MINIMIZARLA
 
-    private double quantitat_informacio; //MAXIMIZARLA
+    public double info_perduda; //MINIMIZAR
 
     /*
      CONSTRUCTORA ESTADO INICIAL
@@ -71,6 +71,7 @@ public class EstatSensor {
         }
 
         cost_transmissio = 0;
+        info_perduda = 0;
 
         Queue<Integer> conectadosACentro = new LinkedList<>();
         Queue<Integer> NoConectadosACentro = new LinkedList<>();
@@ -247,6 +248,18 @@ public class EstatSensor {
         double cost =  Math.pow(dist, 2) * sens.get(sensorId).getCapacidad(); //DIST^2 X volumenDadesS
         return cost;
     }
+
+    public double getCost_All (int sensorId) {
+        double cost = sens.get(sensorId).getCapacidad();
+        int i = 2;
+        int nextSensor = getTransmissionSC(sensorId);
+        while (nextSensor < numSensors) {
+            cost += sens.get(nextSensor).getCapacidad()*i;
+            ++i;
+            nextSensor = getTransmissionSC(nextSensor);
+        }
+        return cost;
+    }
 //
 //    public void printEstado(){
 //        for(int i = 0; i < numSensors; i++){
@@ -270,7 +283,7 @@ public class EstatSensor {
         for(int i = 0; i < numSensors; i++){
             nextSensor = transmissionesSC.get(i);
             if(checkMaxConexiones(nextSensor)) {
-                //System.out.println("Maximo con " + nextSensor);
+                System.out.println("Maximo con " + nextSensor);
                 return false;
             }
             int puntoPartida = nextSensor;
@@ -278,13 +291,14 @@ public class EstatSensor {
             //camino.add(puntoPartida);
             //miramos que en el camino no hayan bucles y que el camino este conectado a centro
             while(nextSensor < numSensors) {
-                if(nextSensor == -1){ //||// camino.contains(nextSensor)){
-                    //System.out.println(nextSensor);
+                if(nextSensor == -1 || camino.contains(nextSensor)){ //||// camino.contains(nextSensor)){
+                    System.out.println(puntoPartida+ " alomejor fallo aqui " + nextSensor);
                     return false;
                 }
                 //System.out.println("Estoy en " + nextSensor);
-                nextSensor = transmissionesSC.get(nextSensor);
                 camino.add(nextSensor);
+                nextSensor = transmissionesSC.get(nextSensor);
+
             }
         }
         return true;
@@ -300,8 +314,8 @@ public class EstatSensor {
 
         info_Capturada_SC = new ArrayList<>(state.info_Capturada_SC);
 
-        cost_transmissio = 0;
-        quantitat_informacio = 0;
+        cost_transmissio = state.cost_transmissio;
+        info_perduda = state.info_perduda;
 
     }
     /* HEURISTICS */
@@ -310,9 +324,6 @@ public class EstatSensor {
         return cost_transmissio;
     }
 
-    public double getHeuristic2() {
-        return cost_transmissio;
-    }
 
 
     /*OPERADORES*/
@@ -325,7 +336,7 @@ public class EstatSensor {
     //Han de explorar el espacio de búsqueda
 
 
-    public void swap_ConexioSC (int id_sensor, int id_sensor2) {
+   /* public void swap_ConexioSC (int id_sensor, int id_sensor2) {
         //En esta accion cambiar dos sensores que estan conectados a dos centros diferentes
         int centroAssig = -1;
         double minDist = -1;
@@ -380,6 +391,8 @@ public class EstatSensor {
         }
     }
 
+    */
+
     private void actualizaInfoTransmit(int id_sensor_partida) {
         int nextSensor = id_sensor_partida;
         int infoPrimera = info_Capturada_SC.get(id_sensor_partida);
@@ -394,6 +407,7 @@ public class EstatSensor {
         info_Capturada_SC.set(nextSensor, infoPrimera + suma);
     }
 
+    /*
     private void swap_ConexioSS (int id_sensor) {
         int Sensor_cercano = -1;
         double distMin = -1;
@@ -449,7 +463,9 @@ public class EstatSensor {
         }
     }
 
-    public void swap_ConexioSS (int id_sensor, int id_sensor2) {
+     */
+
+    public void swap (int id_sensor, int id_sensor2) {
 //        En esta accion se intercambian sensores
 //        hay que actualizar:
 //        transmissiones (conexion)
@@ -482,7 +498,7 @@ public class EstatSensor {
 
 
 
-    private double distSC(int coordX, int coordY, int coordX1, int coordY1) {
+    public double distSC(int coordX, int coordY, int coordX1, int coordY1) {
 
         int distX = coordX - coordX1;
         int distY = coordY - coordY1;
@@ -526,6 +542,13 @@ public class EstatSensor {
         return info_Capturada_SC.get(num_sensor);
     }
 
+    public int getNumSensors() {
+        return numSensors;
+    }
+
+    public int getNumCentros() {
+        return numCentros;
+    }
 
 
 }
