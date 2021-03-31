@@ -24,6 +24,8 @@ public class EstatSensor {
 
     ArrayList<Integer> info_Capturada_SC; //agafar size sensor o centro i ver la info capturada de cada uno
 
+    ArrayList<Integer> maxCapacidadEnviada; // la capacidad maxima de cada sensor / centro
+
     /* INFO
      //cada centro de datos puede recibir hasta 150 Mb/s
      //un centro de datos puede recibir hasta 25 conexiones
@@ -32,7 +34,6 @@ public class EstatSensor {
     */
 
     final double capacitat_Centre = 150; //capacitat centre es de 150 Mb/s
-
 
     public double cost_transmissio; //MINIMIZARLA
 
@@ -64,10 +65,14 @@ public class EstatSensor {
 
         for (int i = 0; i < numSensores; ++i) {
             int max = (int) (sens.get(i).getCapacidad()*2);
-            info_Capturada_SC.add((int) sens.get(i).getCapacidad());
+            int capacidad = (int) sens.get(i).getCapacidad();
+            info_Capturada_SC.add(capacidad);
+            maxCapacidadEnviada.add(capacidad);
+
         }
         for (int i = numSensores; i < numSensores+numCent; ++i) {
             info_Capturada_SC.add(0);
+            maxCapacidadEnviada.add(150);
         }
 
         cost_transmissio = 0;
@@ -320,7 +325,7 @@ public class EstatSensor {
     }
     /* HEURISTICS */
 
-    public double getHeuristic1() {
+    public double getHeuristic(float p_cost, float p_loss) {
         return cost_transmissio;
     }
 
@@ -393,18 +398,24 @@ public class EstatSensor {
 
     */
 
-    private void actualizaInfoTransmit(int id_sensor_partida) {
+    private void actualizaInfoTransmit(int id_sensor_partida, int capacitatSubstract) {
+
+//      capacitatSubstract representa la info que transmitia la rama que estaba conectada antes
+//      y al desconectarla hay que quitar su peso de quienes estaban conectados
         int nextSensor = id_sensor_partida;
         int infoPrimera = info_Capturada_SC.get(id_sensor_partida);
-        int suma = 0;
+        nextSensor = transmissionesSC.get(nextSensor);
+        int suma = maxCapacidadEnviada.get(nextSensor);
+        //empezamos por el siguiente de partida
         while (nextSensor < numSensors) {
-            double infoEnviadaBasica = sens.get(nextSensor).getCapacidad();
-            suma += (int) infoEnviadaBasica;
-            info_Capturada_SC.set(nextSensor, infoPrimera + suma);
+            //sumamos los datos que envia el sensor solo
+            suma += maxCapacidadEnviada.get(nextSensor);
+            info_Capturada_SC.set(nextSensor, infoPrimera + suma - capacitatSubstract);
             nextSensor = transmissionesSC.get(nextSensor);
+
         }
 //      next sensor ya es un centro
-        info_Capturada_SC.set(nextSensor, infoPrimera + suma);
+        info_Capturada_SC.set(nextSensor, infoPrimera + suma - capacitatSubstract);
     }
 
     /*
@@ -472,10 +483,14 @@ public class EstatSensor {
 //        info retransmitida por el sensor al que te conectas
 //        info recibida por los centros
         int aux_transmissions = getTransmissionSC(id_sensor);
+//      obtenemos los datos que transmite la rama
+        int infoTransmitRama = info_Capturada_SC.get(id_sensor2);
+        int infoTransmitRama2 = info_Capturada_SC.get(id_sensor);
+
         transmissionesSC.set(id_sensor, getTransmissionSC(id_sensor2));
-        actualizaInfoTransmit(id_sensor);
+        actualizaInfoTransmit(id_sensor, infoTransmitRama);
         transmissionesSC.set(id_sensor2, aux_transmissions);
-        actualizaInfoTransmit(id_sensor2);
+        actualizaInfoTransmit(id_sensor2, infoTransmitRama2);
 
     }
 
