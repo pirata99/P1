@@ -1,6 +1,7 @@
 package src.source;
 
 import IA.Red.CentrosDatos;
+import IA.Red.Sensor;
 import IA.Red.Sensores;
 
 import java.util.*;
@@ -62,6 +63,8 @@ public class EstatSensor {
 
         info_Capturada_SC = new ArrayList<>(numSensores+numCent);
 
+        maxCapacidadEnviada = new ArrayList<>(numSensores+numCent);
+
 
         for (int i = 0; i < numSensores; ++i) {
             int max = (int) (sens.get(i).getCapacidad()*2);
@@ -72,7 +75,7 @@ public class EstatSensor {
         }
         for (int i = numSensores; i < numSensores+numCent; ++i) {
             info_Capturada_SC.add(0);
-            maxCapacidadEnviada.add(150);
+            maxCapacidadEnviada.add(50);
         }
 
         cost_transmissio = 0;
@@ -91,6 +94,8 @@ public class EstatSensor {
                 break;
 
         }
+        //calculamos com están los indicadores para el estado inicial
+        calculaHeuristic();
 
         /*
         //Estado inicial 3: sensores se conectan de manera random a centros
@@ -326,10 +331,40 @@ public class EstatSensor {
     /* HEURISTICS */
 
     public double getHeuristic(float p_cost, float p_loss) {
-        return cost_transmissio;
+//      devuelve es heuristico ponderado de nuestros indicadores
+        return (p_cost * cost_transmissio + info_perduda * p_loss);
     }
 
 
+    private void calculaHeuristic(){
+//      esta funcion deberia de ser llamada para calcular inicialmente el el coste y info perdida general
+//      se puede actualizar el valor de estas variables facilmente en al hacer una operación
+        int info_perdida = 0;
+        double cost_trans = 0;
+        for (int i = 0; i < numSensors; i++){
+            int infoEnvia = info_Capturada_SC.get(i);
+            int infoMax = maxCapacidadEnviada.get(i)*3;
+            int perd = infoEnvia - infoMax;
+            //si hay perdidas
+            if(perd > 0) {
+                info_perdida += perd;
+                infoEnvia = infoMax;
+            }
+            Sensor sens_temp_origen = sens.get(i);
+            int s_origen_X = sens_temp_origen.getCoordX();
+            int s_origen_Y = sens_temp_origen.getCoordY();
+
+            Sensor sens_temp_dest = sens.get(transmissionesSC.get(i));
+            int s_dest_X = sens_temp_dest.getCoordX();
+            int s_dest_Y = sens_temp_dest.getCoordY();
+
+
+            double dist_orig_dest = distSC(s_origen_X,s_origen_Y, s_dest_X, s_dest_Y);
+            cost_trans = costDist(dist_orig_dest, (int) infoEnvia);
+        }
+        cost_transmissio = cost_trans;
+        info_perduda = info_perdida;
+    }
 
     /*OPERADORES*/
     //LOS OPERADORES SIEMPRE TIENEN QUE GENERAR UN ESTADO SOLUCIÓN, HAY QUE TENER EN CUENTA QUE CUANDO CAMBIAS EL ESTADO, MODIFICAS EL HEURISTICO(COSTE)
@@ -476,6 +511,40 @@ public class EstatSensor {
 
      */
 
+    private ArrayList<Double> calculaIndicadoresParcialesSwap(int id_sensor){
+        //aqui actualizamos tambien nuestros indicadores
+
+//      CALCULO DE EL COSTE
+        Sensor sens_temp_origen = sens.get(id_sensor);
+        int s_origen_X = sens_temp_origen.getCoordX();
+        int s_origen_Y = sens_temp_origen.getCoordY();
+
+        Sensor sens_temp_dest = sens.get(transmissionesSC.get(id_sensor));
+        int s_dest_X = sens_temp_dest.getCoordX();
+        int s_dest_Y = sens_temp_dest.getCoordY();
+
+//      calculamos cuanta info esta enviando
+        double infoEnvia = info_Capturada_SC.get(id_sensor);
+        double maxEnvia = maxCapacidadEnviada.get(id_sensor)*3;
+        if(infoEnvia>maxEnvia) infoEnvia = maxEnvia;
+//      calculamos distancia
+        double dist_orig_dest = distSC(s_origen_X,s_origen_Y, s_dest_X, s_dest_Y);
+//        cost_transmissio -= costDist(dist_orig_dest, (int) infoEnvia);
+
+//      CALCULO DE LA PERDIDA
+        int nextSensor = transmissionesSC.get(id_sensor);
+        double infoEnviaNext = info_Capturada_SC.get(nextSensor);
+        double maxEnviaNext = maxCapacidadEnviada.get(nextSensor)*3;
+        double perd = infoEnviaNext - maxEnviaNext;
+        //si hay perdidas
+        if(perd < 0) perd = 0;
+
+        ArrayList<Double> ret = new ArrayList<Double>(2);
+        ret.set(0, costDist(dist_orig_dest, (int) infoEnvia));
+        ret.set(1, perd);
+        return ret;
+    }
+
     public void swap (int id_sensor, int id_sensor2) {
 //        En esta accion se intercambian sensores
 //        hay que actualizar:
@@ -487,10 +556,23 @@ public class EstatSensor {
         int infoTransmitRama = info_Capturada_SC.get(id_sensor2);
         int infoTransmitRama2 = info_Capturada_SC.get(id_sensor);
 
+//      guardamos el coste de transmitir que tenemos antes del swap para cada sensor implicado
+        ArrayList<Double> oldParcialIndic = calculaIndicadoresParcialesSwap(id_sensor);
+        ArrayList<Double> oldParcialIndic2 = calculaIndicadoresParcialesSwap(id_sensor2);
+
+//      hacemos el swap, actualizamos la info transmitida y calculamos el nuevo coste de stransmitir
         transmissionesSC.set(id_sensor, getTransmissionSC(id_sensor2));
         actualizaInfoTransmit(id_sensor, infoTransmitRama);
+        ArrayList<Double> newParcialIndic = calculaIndicadoresParcialesSwap(id_sensor);
+
+//      hacemos el swap, actualizamos la info transmitida y calculamos el nuevo coste de stransmitir
         transmissionesSC.set(id_sensor2, aux_transmissions);
         actualizaInfoTransmit(id_sensor2, infoTransmitRama2);
+        ArrayList<Double> newParcialIndic2 = calculaIndicadoresParcialesSwap(id_sensor2);
+
+//      actualizamos el coste y la infoperdida
+        cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
+        info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
 
     }
 
@@ -514,16 +596,17 @@ public class EstatSensor {
 
 
     public double distSC(int coordX, int coordY, int coordX1, int coordY1) {
-
         int distX = coordX - coordX1;
         int distY = coordY - coordY1;
 
         double resX = Math.pow(distX, 2);
         double resY = Math.pow(distY, 2);
 
-
         return Math.sqrt(resX+resY);
+    }
 
+    public double costDist(double dist, int data){
+        return Math.pow(dist, 2) * data;
     }
 
 
