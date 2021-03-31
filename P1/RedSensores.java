@@ -178,7 +178,18 @@ public class RedSensores {
     }
 
     public static double BusquedaSimulatedAnnealing(EstatSensor e, int steps, int stilter, int k, double lambda ) throws Exception {
-        return 0;
+        Problem problema = new Problem(e, new RedSuccessorFunction(), new RedGoalTest(), new RedHeuristicFunction());
+        Search search = new SimulatedAnnealingSearch(steps, stilter, k, lambda);
+        System.out.println("heeeey");
+        SearchAgent agent = new SearchAgent(problema, search);
+
+        float cost = 2;
+
+        System.out.println("Coste = " + cost);
+        System.out.println("Datos perdidos = " + 2);
+
+
+        return (((EstatSensor) search.getGoalState()).getHeuristic(cost,1));
     }
 
     private static void experimento1() throws Exception {
