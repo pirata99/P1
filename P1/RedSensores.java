@@ -193,6 +193,9 @@ public class RedSensores {
     }
 
     private static void experimento1() throws Exception {
+        ArrayList<Double> c1 = new ArrayList<>(); //coste
+        ArrayList<Long> t1 = new ArrayList<>(); //tiempo
+
         Sensores s = new Sensores(100,1234);
         CentrosDatos cd = new CentrosDatos(2,4567);
 
@@ -202,8 +205,21 @@ public class RedSensores {
         int seedC = 4567;
 //        System.out.println(args[1]);
 //        int tipoIni = Integer.parseInt(args[1]);
-        int tipoIni = 2;
+
         EstatSensor estat = new EstatSensor(numSensores, seed, numCent, seedC);
+        estat.EstatInicial_2();
+
+        long ini = System.currentTimeMillis();
+        double cost = BusquedaHillClimbing(estat);
+        long fin = System.currentTimeMillis();
+        //si operador 1 haz esto
+        c1.add(cost);
+        t1.add(fin-ini);
+
+        c1.set(0, (double)Math.round(c1.get(0) * 100d) / 100d);
+
+        System.out.println("c1: " + c1);
+        System.out.println("t1: " + t1);
         boolean valido= estat.estadoValido();
 
         System.out.println(valido);
