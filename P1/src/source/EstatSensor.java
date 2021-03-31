@@ -43,7 +43,7 @@ public class EstatSensor {
     /*
      CONSTRUCTORA ESTADO INICIAL
      */
-    public EstatSensor (int tipoIni, int numSensores, int seedSens, int numCent, int seedCent) {
+    public EstatSensor (int numSensores, int seedSens, int numCent, int seedCent) {
         numCentros = numCent;
         numSensors = numSensores;
         sens = new Sensores(numSensores, seedSens);
@@ -85,15 +85,8 @@ public class EstatSensor {
         Queue<Integer> NoConectadosACentro = new LinkedList<>();
         ArrayList<Boolean> conectaAcentro = new ArrayList<>(numSensores);
 
-        switch (tipoIni){
-            case 1:
-                EstatInicial_1();
-                break;
-            case 2:
-                EstatInicial_2();
-                break;
 
-        }
+
         //calculamos com están los indicadores para el estado inicial
         calculaHeuristic();
 
@@ -162,7 +155,7 @@ public class EstatSensor {
         return disponibles;
     }
 
-    private void EstatInicial_1(){
+    public void EstatInicial_1(){
         Queue<Integer> conectadosACentro = new LinkedList<>();
         Queue<Integer> NoConectadosACentro = new LinkedList<>();
         ArrayList<Boolean> conectaAcentro = new ArrayList<>(numSensors);
@@ -204,8 +197,11 @@ public class EstatSensor {
             id_sensor = NoConectadosACentro.remove();
             conectadosACentro = iniConectaSensores(conectadosACentro, id_sensor);
         }
+
+        System.out.println(estadoValido());
+
     }
-    private void EstatInicial_2(){
+    public void EstatInicial_2(){
 
         for (int s = 0; s < numSensors; ++s) {
             int centroAssignado = -1; //centro al que se va a conectar el sensor
