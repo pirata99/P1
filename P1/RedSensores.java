@@ -1,4 +1,10 @@
+import aima.search.framework.Problem;
+import aima.search.framework.Search;
+import aima.search.framework.SearchAgent;
 import src.source.*;
+
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.*;
 
 
@@ -13,6 +19,9 @@ import aima.search.informed.SimulatedAnnealingSearch;
 
 
 public class RedSensores {
+
+    static private int numIteracions = 1;
+    static private ArrayList<Integer> cost = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
 
@@ -142,7 +151,30 @@ public class RedSensores {
         //estat.generaSolInicial2(); */
 
     public static double BusquedaHillClimbing(EstatSensor e) throws Exception {
-        return 0;
+
+        Problem problema = new Problem(e, new RedSuccessorFunction(), new RedGoalTest(), new RedHeuristicFunction());
+        Search search = new HillClimbingSearch();
+        long iniTime = System.currentTimeMillis();
+        SearchAgent agent = new SearchAgent(problema, search);
+        System.out.println("heeeey");
+        long fiTime = System.currentTimeMillis();
+
+        float cost = 2;
+
+        System.out.println("Coste = " + cost);
+
+        FileWriter fichero = null;
+        fichero = new FileWriter("prova.txt", true);
+        PrintWriter pw = new PrintWriter(fichero);
+
+        if (numIteracions % 20 == 0)
+            pw.println(String.format("%.2f", ((EstatSensor) search.getGoalState()).getHeuristic(cost,1)) + " ");
+        else
+            pw.print(String.format("%.2f", ((EstatSensor) search.getGoalState()).getHeuristic(cost,1)) + " ");
+        fichero.close();
+        ++numIteracions;
+
+        return (((EstatSensor) search.getGoalState()).getHeuristic(cost,1));
     }
 
     public static double BusquedaSimulatedAnnealing(EstatSensor e, int steps, int stilter, int k, double lambda ) throws Exception {

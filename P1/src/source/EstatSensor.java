@@ -3,6 +3,7 @@ package src.source;
 import IA.Red.CentrosDatos;
 import IA.Red.Sensor;
 import IA.Red.Sensores;
+import IA.Red.Centro;
 
 import java.util.*;
 
@@ -88,7 +89,6 @@ public class EstatSensor {
 
 
         //calculamos com están los indicadores para el estado inicial
-        calculaHeuristic();
 
         /*
         //Estado inicial 3: sensores se conectan de manera random a centros
@@ -199,6 +199,7 @@ public class EstatSensor {
         }
 
         System.out.println(estadoValido());
+        calculaHeuristic();
 
     }
     public void EstatInicial_2(){
@@ -247,6 +248,7 @@ public class EstatSensor {
                 }
             }
         }
+        calculaHeuristic();
     }
 
     private double getCost_transmissio(int sensorId, int centroId){
@@ -350,16 +352,26 @@ public class EstatSensor {
             int s_origen_X = sens_temp_origen.getCoordX();
             int s_origen_Y = sens_temp_origen.getCoordY();
 
-            Sensor sens_temp_dest = sens.get(transmissionesSC.get(i));
-            int s_dest_X = sens_temp_dest.getCoordX();
-            int s_dest_Y = sens_temp_dest.getCoordY();
-
+            int destino=transmissionesSC.get(i);
+            int s_dest_X=-1;
+            int s_dest_Y=-1;
+            if(destino<numSensors) {
+                Sensor sens_temp_dest = sens.get(destino);
+                s_dest_X = sens_temp_dest.getCoordX();
+                s_dest_Y = sens_temp_dest.getCoordY();
+            }
+            else{
+                Centro cent_temp_dest = cd.get(destino-numSensors);
+                s_dest_X = cent_temp_dest.getCoordX();
+                s_dest_Y = cent_temp_dest.getCoordY();
+            }
 
             double dist_orig_dest = distSC(s_origen_X,s_origen_Y, s_dest_X, s_dest_Y);
             cost_trans = costDist(dist_orig_dest, (int) infoEnvia);
         }
         cost_transmissio = cost_trans;
         info_perduda = info_perdida;
+        System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
     }
 
     /*OPERADORES*/
@@ -515,10 +527,19 @@ public class EstatSensor {
         int s_origen_X = sens_temp_origen.getCoordX();
         int s_origen_Y = sens_temp_origen.getCoordY();
 
-        Sensor sens_temp_dest = sens.get(transmissionesSC.get(id_sensor));
-        int s_dest_X = sens_temp_dest.getCoordX();
-        int s_dest_Y = sens_temp_dest.getCoordY();
-
+        int destino=transmissionesSC.get(id_sensor);
+        int s_dest_X=-1;
+        int s_dest_Y=-1;
+        if(destino<numSensors) {
+            Sensor sens_temp_dest = sens.get(destino);
+            s_dest_X = sens_temp_dest.getCoordX();
+            s_dest_Y = sens_temp_dest.getCoordY();
+        }
+        else{
+            Centro cent_temp_dest = cd.get(destino-numSensors);
+            s_dest_X = cent_temp_dest.getCoordX();
+            s_dest_Y = cent_temp_dest.getCoordY();
+        }
 //      calculamos cuanta info esta enviando
         double infoEnvia = info_Capturada_SC.get(id_sensor);
         double maxEnvia = maxCapacidadEnviada.get(id_sensor)*3;
@@ -535,8 +556,10 @@ public class EstatSensor {
         //si hay perdidas
         if(perd < 0) perd = 0;
 
-        ArrayList<Double> ret = new ArrayList<Double>(2);
+        ArrayList<Double> ret = new ArrayList<>(2);
+        System.out.println(costDist(dist_orig_dest, (int) infoEnvia));
         ret.set(0, costDist(dist_orig_dest, (int) infoEnvia));
+        System.out.println(costDist(dist_orig_dest, (int) infoEnvia));
         ret.set(1, perd);
         return ret;
     }
@@ -602,7 +625,11 @@ public class EstatSensor {
     }
 
     public double costDist(double dist, int data){
-        return Math.pow(dist, 2) * data;
+
+        double ret = Math.pow(dist,2) * data;
+
+        return ret;
+
     }
 
 
