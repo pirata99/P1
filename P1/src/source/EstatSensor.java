@@ -1,5 +1,6 @@
 package src.source;
 
+import IA.Red.Centro;
 import IA.Red.CentrosDatos;
 import IA.Red.Sensor;
 import IA.Red.Sensores;
@@ -197,9 +198,9 @@ public class EstatSensor {
             id_sensor = NoConectadosACentro.remove();
             conectadosACentro = iniConectaSensores(conectadosACentro, id_sensor);
         }
-
-        System.out.println(estadoValido());
         calculaHeuristic();
+        System.out.println(estadoValido());
+        //calculaHeuristic();
 
     }
     public void EstatInicial_2(){
@@ -556,11 +557,9 @@ public class EstatSensor {
         //si hay perdidas
         if(perd < 0) perd = 0;
 
-        ArrayList<Double> ret = new ArrayList<>(2);
-        System.out.println(costDist(dist_orig_dest, (int) infoEnvia));
-        ret.set(0, costDist(dist_orig_dest, (int) infoEnvia));
-        System.out.println(costDist(dist_orig_dest, (int) infoEnvia));
-        ret.set(1, perd);
+        ArrayList<Double> ret = new ArrayList<Double>();
+        ret.add( costDist(dist_orig_dest, (int) infoEnvia));
+        ret.add( perd);
         return ret;
     }
 
@@ -592,6 +591,7 @@ public class EstatSensor {
 //      actualizamos el coste y la infoperdida
         cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
         info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
+        System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
 
     }
 

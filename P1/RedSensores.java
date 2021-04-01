@@ -77,7 +77,7 @@ public class RedSensores {
                 System.out.println("Experimentos: 3");
                 System.out.println("Terminar programa: 0");
 
-                op = in.nextInt();
+                op = in.nextInt(); //Aqui peta si no es un numero
                 while (op != 0 && op != 1 && op != 2 && op != 3) {
                     System.out.println("Introduce un valor correcto: 0, 1, 2 o 3");
                     op = in.nextInt();
@@ -102,6 +102,7 @@ public class RedSensores {
                     System.out.println("Introduce un valor correcto: 1 o 2");
                     solIni = in.nextInt();
                 }
+                System.out.println(seed);
                 if (solIni == 1) {
                     estat = new EstatSensor(numSens, seed, numCent, seed);
                     estat.EstatInicial_1();
