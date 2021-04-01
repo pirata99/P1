@@ -112,6 +112,7 @@ public class RedSensores {
                         estat.EstatInicial_2();
                 }
 
+
                 if (op == 1)
                         BusquedaHillClimbing(estat);
                 else
