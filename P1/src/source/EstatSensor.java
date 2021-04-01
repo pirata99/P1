@@ -51,6 +51,7 @@ public class EstatSensor {
         sens = new Sensores(numSensores, seedSens);
         cd = new CentrosDatos(numCent, seedCent);
 
+
         transmissionesSC = new ArrayList<>();
         for (int i = 0; i < numSensores + numCent; ++i) {
             transmissionesSC.add(-1);
@@ -214,7 +215,7 @@ public class EstatSensor {
                 int centroRandom = r.nextInt(numCentros);
                 if (numConectadosSC.get(numSensors + centroRandom) < 25) {
                     centroAssignado = centroRandom;
-                    //System.out.println("he que estoy connected");
+
                 }
                 ++i;
             }
@@ -225,7 +226,8 @@ public class EstatSensor {
                 int repTotal = (int) (getInfoEmmagatzemadaSC(numSensors + centroAssignado) + sens.get(s).getCapacidad());
                 info_Capturada_SC.set(numSensors + centroAssignado, repTotal);
                 cost_transmissio += getCost_transmissio(s, centroAssignado); //DIST^2 X volumenDadesS
-                System.out.println("El sensor " + s +" se ha conectado al centro " + centroAssignado);
+
+                System.out.println("El sensor " + s +" se ha conectado al centro " + centroAssignado + "y esta en " + sens.get(s).getCoordX()  + " , " + sens.get(s).getCoordY()+ " con capacidad de " + sens.get(s).getCapacidad()) ;
             }
             // (getInfoEmmagatzemadaSC(sensorRandom) + sens.get(s).getCapacidad() <= sens.get(sensorRandom).getCapacidad() * 2)
             else { //conecta sensor a sensor
@@ -243,8 +245,7 @@ public class EstatSensor {
                         cost_transmissio += Math.pow(dist, 2) * (sens.get(s).getCapacidad() + getInfoEmmagatzemadaSC(s)); //DIST^2 X volumenDadesS
                         trobat = true;
                         System.out.println("El sensor" +s+ " se ha conectado al sensor " + sensorRandom);
-                        //System.out.println("La info en datos del sensor " +sensorRandom+ " es la siguiente: "+ getInfoEmmagatzemadaSC(sensorRandom));
-                        //System.out.println("Su capacidad es " + sens.get(sensorRandom).getCapacidad());
+
                     }
                 }
             }
@@ -254,7 +255,7 @@ public class EstatSensor {
 
     private double getCost_transmissio(int sensorId, int centroId){
         double dist = distSC(sens.get(sensorId).getCoordX(), sens.get(sensorId).getCoordY(), cd.get(centroId).getCoordX(), cd.get(centroId).getCoordY());
-        double cost =  Math.pow(dist, 2) * sens.get(sensorId).getCapacidad(); //DIST^2 X volumenDadesS
+        double cost =  Math.pow(dist, 2) * getInfoEmmagatzemadaSC(sensorId); //DIST^2 X volumenDadesS
         return cost;
     }
 
@@ -338,15 +339,18 @@ public class EstatSensor {
     private void calculaHeuristic(){
 //      esta funcion deberia de ser llamada para calcular inicialmente el el coste y info perdida general
 //      se puede actualizar el valor de estas variables facilmente en al hacer una operación
+
         int info_perdida = 0;
         double cost_trans = 0;
+        cost_transmissio = 0;
+        info_perduda = 0;
         for (int i = 0; i < numSensors; i++){
             int infoEnvia = info_Capturada_SC.get(i);
             int infoMax = maxCapacidadEnviada.get(i)*3;
             int perd = infoEnvia - infoMax;
             //si hay perdidas
             if(perd > 0) {
-                info_perdida += perd;
+                info_perdida = perd;
                 infoEnvia = infoMax;
             }
             Sensor sens_temp_origen = sens.get(i);
@@ -369,9 +373,11 @@ public class EstatSensor {
 
             double dist_orig_dest = distSC(s_origen_X,s_origen_Y, s_dest_X, s_dest_Y);
             cost_trans = costDist(dist_orig_dest, (int) infoEnvia);
+
+            cost_transmissio += cost_trans;
+            info_perduda += info_perdida;
         }
-        cost_transmissio = cost_trans;
-        info_perduda = info_perdida;
+
         System.out.println("El coste de transmision inicial es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
     }
 
@@ -588,6 +594,8 @@ public class EstatSensor {
         actualizaInfoTransmit(id_sensor2, infoTransmitRama2);
         ArrayList<Double> newParcialIndic2 = calculaIndicadoresParcialesSwap(id_sensor2);
 
+        System.out.println("ACABO DE hacer swap DEL ELEMENTO " + id_sensor +" al " + id_sensor2);
+
 //      actualizamos el coste y la infoperdida
         calculaHeuristic();
         //cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
@@ -649,14 +657,12 @@ public class EstatSensor {
 
     public int getTransmissionSC(int id) { //numero conexiones sensor
 
-        System.out.println("Sensor " + id + ": Transmissiones :" + transmissionesSC.get(id));
         return transmissionesSC.get(id);
 
     }
 
     public int getNConexionesCD(int id) { //numero conexiones CentroDatos
 
-        //System.out.println("Centro " + id + ": Conexiones :" + numConectadosSC.get(id));
         return numConectadosSC.get(id);
     }
 

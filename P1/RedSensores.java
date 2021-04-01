@@ -158,25 +158,27 @@ public class RedSensores {
         Search search = new HillClimbingSearch();
         long iniTime = System.currentTimeMillis();
         SearchAgent agent = new SearchAgent(problema, search);
-        System.out.println("heeeey");
         long fiTime = System.currentTimeMillis();
 
-        float cost = 2;
+        double cost =  e.cost_transmissio;
+        double info_perduda = e.info_perduda;
 
         System.out.println("Coste = " + cost);
-
-        FileWriter fichero = null;
+        /*
+        FileWriter fichero;
         fichero = new FileWriter("prova.txt", true);
         PrintWriter pw = new PrintWriter(fichero);
 
         if (numIteracions % 20 == 0)
-            pw.println(String.format("%.2f", ((EstatSensor) search.getGoalState()).getHeuristic(cost,1)) + " ");
+            pw.println(String.format("%.2f", ((EstatSensor) search.getGoalState()).getHeuristic((float) cost, (float) info_perduda)) + " ");
         else
-            pw.print(String.format("%.2f", ((EstatSensor) search.getGoalState()).getHeuristic(cost,1)) + " ");
+            pw.print(String.format("%.2f", ((EstatSensor) search.getGoalState()).getHeuristic((float) cost, (float) info_perduda)) + " ");
         fichero.close();
         ++numIteracions;
 
-        return (((EstatSensor) search.getGoalState()).getHeuristic(cost,1));
+         */
+
+        return (((EstatSensor) search.getGoalState()).getHeuristic((float) cost, (float) info_perduda));
     }
 
     public static double BusquedaSimulatedAnnealing(EstatSensor e, int steps, int stilter, int k, double lambda ) throws Exception {
@@ -185,13 +187,13 @@ public class RedSensores {
         System.out.println("heeeey");
         SearchAgent agent = new SearchAgent(problema, search);
 
-        float cost = 2;
+        double cost = e.cost_transmissio;
 
         System.out.println("Coste = " + cost);
         System.out.println("Datos perdidos = " + 2);
 
 
-        return (((EstatSensor) search.getGoalState()).getHeuristic(cost,1));
+        return (((EstatSensor) search.getGoalState()).getHeuristic((float) cost,1));
     }
 
     private static void experimento1() throws Exception {
