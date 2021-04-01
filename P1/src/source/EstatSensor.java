@@ -372,7 +372,7 @@ public class EstatSensor {
         }
         cost_transmissio = cost_trans;
         info_perduda = info_perdida;
-        System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
+        System.out.println("El coste de transmision inicial es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
     }
 
     /*OPERADORES*/
@@ -589,9 +589,10 @@ public class EstatSensor {
         ArrayList<Double> newParcialIndic2 = calculaIndicadoresParcialesSwap(id_sensor2);
 
 //      actualizamos el coste y la infoperdida
-        cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
-        info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
-        System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
+        calculaHeuristic();
+        //cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
+       // info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
+        //System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
 
     }
 
