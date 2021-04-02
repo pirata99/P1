@@ -1,7 +1,7 @@
 package src.source;
 import aima.search.framework.Successor;
 import aima.search.framework.SuccessorFunction;
-import java.util.List;
+
 import java.util.ArrayList;
 
 public class RedSuccessorFunction  implements SuccessorFunction {
@@ -31,6 +31,7 @@ public class RedSuccessorFunction  implements SuccessorFunction {
                 EstatSensor sucessor = new EstatSensor(state);
                 if (estadoValido && (sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(j)) && (sucessor.transmissionesSC.get(i) != j && i != sucessor.transmissionesSC.get(j))) {
                     sucessor.swap(i,j);
+                    //sucessor.moveSensor(i);
                     double heur2 = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float)state.info_perduda);
                     if (heur2 < heur) {
                         res.add(new Successor("sensor " + i + " ha hecho swap con sensor "+ j, sucessor));
