@@ -604,6 +604,20 @@ public class EstatSensor {
 
     }
 
+    public void mover_Sensor (int id_sensor) {
+        Random r = new Random();
+        int sensorRandom = r.nextInt(numSensors);
+        if (id_sensor != sensorRandom && (transmissionesSC.get(id_sensor) != transmissionesSC.get(sensorRandom))) {
+            if (checkMaxConexiones(sensorRandom)) {
+                transmissionesSC.set(id_sensor, sensorRandom);
+            }
+
+
+        }
+
+
+    }
+
 
 //    private void swap (int id_sensor) { //esta mira cual es el tipo de swap que hay que hacer
 //        if (getTransmissionSC(id_sensor) < numSensors) swap_ConexioSS(id_sensor);
