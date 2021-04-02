@@ -73,12 +73,12 @@ public class EstatSensor {
             int max = (int) (sens.get(i).getCapacidad()*2);
             int capacidad = (int) sens.get(i).getCapacidad();
             info_Capturada_SC.add(capacidad);
-            maxCapacidadEnviada.add(capacidad);
+            maxCapacidadEnviada.add(max);
 
         }
         for (int i = numSensores; i < numSensores+numCent; ++i) {
             info_Capturada_SC.add(0);
-            maxCapacidadEnviada.add(50);
+            maxCapacidadEnviada.add(150);
         }
 
         cost_transmissio = 0;
@@ -324,6 +324,8 @@ public class EstatSensor {
 
         info_Capturada_SC = new ArrayList<>(state.info_Capturada_SC);
 
+        maxCapacidadEnviada = new ArrayList<>(state.maxCapacidadEnviada);
+
         cost_transmissio = state.cost_transmissio;
         info_perduda = state.info_perduda;
 
@@ -534,6 +536,7 @@ public class EstatSensor {
         int s_origen_X = sens_temp_origen.getCoordX();
         int s_origen_Y = sens_temp_origen.getCoordY();
 
+
         int destino=transmissionesSC.get(id_sensor);
         int s_dest_X=-1;
         int s_dest_Y=-1;
@@ -547,13 +550,19 @@ public class EstatSensor {
             s_dest_X = cent_temp_dest.getCoordX();
             s_dest_Y = cent_temp_dest.getCoordY();
         }
+
+
 //      calculamos cuanta info esta enviando
         double infoEnvia = info_Capturada_SC.get(id_sensor);
+
+
         double maxEnvia = maxCapacidadEnviada.get(id_sensor)*3;
         if(infoEnvia>maxEnvia) infoEnvia = maxEnvia;
+
 //      calculamos distancia
         double dist_orig_dest = distSC(s_origen_X,s_origen_Y, s_dest_X, s_dest_Y);
 //        cost_transmissio -= costDist(dist_orig_dest, (int) infoEnvia);
+
 
 //      CALCULO DE LA PERDIDA
         int nextSensor = transmissionesSC.get(id_sensor);
@@ -580,13 +589,22 @@ public class EstatSensor {
         int infoTransmitRama = info_Capturada_SC.get(id_sensor2);
         int infoTransmitRama2 = info_Capturada_SC.get(id_sensor);
 
+
+
 //      guardamos el coste de transmitir que tenemos antes del swap para cada sensor implicado
         ArrayList<Double> oldParcialIndic = calculaIndicadoresParcialesSwap(id_sensor);
+
         ArrayList<Double> oldParcialIndic2 = calculaIndicadoresParcialesSwap(id_sensor2);
+
+
 
 //      hacemos el swap, actualizamos la info transmitida y calculamos el nuevo coste de stransmitir
         transmissionesSC.set(id_sensor, getTransmissionSC(id_sensor2));
+
         actualizaInfoTransmit(id_sensor, infoTransmitRama);
+
+
+
         ArrayList<Double> newParcialIndic = calculaIndicadoresParcialesSwap(id_sensor);
 
 //      hacemos el swap, actualizamos la info transmitida y calculamos el nuevo coste de stransmitir
@@ -597,10 +615,10 @@ public class EstatSensor {
         System.out.println("ACABO DE hacer swap DEL ELEMENTO " + id_sensor +" al " + id_sensor2);
 
 //      actualizamos el coste y la infoperdida
-        calculaHeuristic();
-        //cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
-       // info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
-        //System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
+        //calculaHeuristic();
+        cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
+        info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
+        System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
 
     }
 

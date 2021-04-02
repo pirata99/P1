@@ -1,6 +1,7 @@
 import aima.search.framework.Problem;
 import aima.search.framework.Search;
 import aima.search.framework.SearchAgent;
+import aima.search.framework.Successor;
 import src.source.*;
 
 import java.io.FileWriter;
@@ -160,10 +161,19 @@ public class RedSensores {
         SearchAgent agent = new SearchAgent(problema, search);
         long fiTime = System.currentTimeMillis();
 
-        double cost =  e.cost_transmissio;
-        double info_perduda = e.info_perduda;
+        ArrayList<Double> cost = RedSuccessorFunction.costosMillors;
+        ArrayList<Double> info = RedSuccessorFunction.infoPerdudaMillor;
+        double costMin = 0;
+        double infoPerd = 0;
+        if (cost.size() > 0) {
+            for (int i = cost.size() - 1; i < cost.size(); ++i) costMin = cost.get(i);
+            for (int i = info.size()-1; i < info.size(); ++i) infoPerd = info.get(i);
+        }
+        if (costMin != 0 && infoPerd != 0) {
+            System.out.println("Coste = " + costMin);
+            System.out.println("InfoPerduda = " + infoPerd);
+        }
 
-        System.out.println("Coste = " + cost);
         /*
         FileWriter fichero;
         fichero = new FileWriter("prova.txt", true);
@@ -178,22 +188,30 @@ public class RedSensores {
 
          */
 
-        return (((EstatSensor) search.getGoalState()).getHeuristic((float) cost, (float) info_perduda));
+        return (((EstatSensor) search.getGoalState()).getHeuristic((float) costMin, (float) infoPerd));
     }
 
     public static double BusquedaSimulatedAnnealing(EstatSensor e, int steps, int stilter, int k, double lambda ) throws Exception {
         Problem problema = new Problem(e, new RedSuccessorFunction(), new RedGoalTest(), new RedHeuristicFunction());
         Search search = new SimulatedAnnealingSearch(steps, stilter, k, lambda);
-        System.out.println("heeeey");
         SearchAgent agent = new SearchAgent(problema, search);
 
-        double cost = e.cost_transmissio;
+        ArrayList<Double> cost = RedSuccessorFunction.costosMillors;
+        ArrayList<Double> info = RedSuccessorFunction.infoPerdudaMillor;
+        double costMin = 0;
+        double infoPerd = 0;
+        if (cost.size() > 0) {
+            for (int i = cost.size() - 1; i < cost.size(); ++i) costMin = cost.get(i);
+            for (int i = info.size()-1; i < info.size(); ++i) infoPerd = info.get(i);
+        }
+        if (costMin != 0 && infoPerd != 0) {
+            System.out.println("Coste = " + costMin);
+            System.out.println("InfoPerduda = " + infoPerd);
+        }
 
-        System.out.println("Coste = " + cost);
-        System.out.println("Datos perdidos = " + 2);
 
 
-        return (((EstatSensor) search.getGoalState()).getHeuristic((float) cost,1));
+        return (((EstatSensor) search.getGoalState()).getHeuristic((float) costMin,(float) infoPerd));
     }
 
     private static void experimento1() throws Exception {
