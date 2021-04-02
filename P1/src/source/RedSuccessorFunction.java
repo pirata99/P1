@@ -17,34 +17,43 @@ public class RedSuccessorFunction  implements SuccessorFunction {
         EstatSensor state = (EstatSensor) redState;
         boolean estadoValido = state.estadoValido();
 
+        boolean nomillora = true;
 
         int numSensores = state.getNumSensors();
 
-        for (int i = 0; i < numSensores; ++i) {
-            /*
-            int transmissionI = state.getTransmissionSC(i);
-            int almacenamientoI = state.getInfoEmmagatzemadaSC(i);
-            double costAnteriorI = state.getCost_All(i);
-             */
-            for (int j = i+1; j < numSensores; ++j) {
-                double heur = state.getHeuristic((float) state.cost_transmissio, (float)state.info_perduda);
-                EstatSensor sucessor = new EstatSensor(state);
-                if (estadoValido && (sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(j)) && (sucessor.transmissionesSC.get(i) != j && i != sucessor.transmissionesSC.get(j))) {
-                    sucessor.swap(i,j);
-                    //sucessor.moveSensor(i);
-                    double heur2 = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float)state.info_perduda);
-                    if (heur2 < heur) {
-                        res.add(new Successor("sensor " + i + " ha hecho swap con sensor "+ j, sucessor));
-                        System.out.println("Lo acabo de guardar");
-                        heur = heur2;
-                        costosMillors.add(sucessor.cost_transmissio);
-                        infoPerdudaMillor.add(sucessor.info_perduda);
+        EstatSensor sucessor = new EstatSensor(state);
+        int k = 0;
+        while (nomillora) {
+            nomillora = false;
+            double heur = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) sucessor.info_perduda);
+            for (int i = 0; i < numSensores; ++i) {
+                /*
+                int transmissionI = state.getTransmissionSC(i);
+                int almacenamientoI = state.getInfoEmmagatzemadaSC(i);
+                double costAnteriorI = state.getCost_All(i);
+                 */
+                for (int j = i + 1; j < numSensores; ++j) {
+                    if (estadoValido && (sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(j)) && (sucessor.transmissionesSC.get(i) != j && i != sucessor.transmissionesSC.get(j))) {
+                        sucessor.swap(i, j);
+                        //sucessor.moveSensor(i);
+                        double heur2 = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) state.info_perduda);
+                        if (heur2 < heur) {
+                            res.add(new Successor("sensor " + i + " ha hecho swap con sensor " + j, sucessor));
+                            System.out.println("Lo acabo de guardar");
+                            heur = heur2;
+                            costosMillors.add(sucessor.cost_transmissio);
+                            infoPerdudaMillor.add(sucessor.info_perduda);
+                            nomillora = true;
+                        } else sucessor.swap(j, i);
                     }
-                    else sucessor.swap(j,i);
                 }
             }
+                if (nomillora) {
+                    Successor su = new Successor("action", res.get(res.size()-1));
+                    k++;
+                }
+                else System.out.println("No si al final me he liado a hacer " + k +" iteraciones y el coste final es " + sucessor.cost_transmissio);
         }
-
         return res;
     }
 }

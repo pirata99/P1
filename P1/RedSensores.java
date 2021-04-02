@@ -259,6 +259,7 @@ public class RedSensores {
         ArrayList<Long> t1 = new ArrayList<>(), t2  = new ArrayList<>();
         for (int i = 0; i < 10; ++i) {
             int seed = random.nextInt(10000);
+            int op = 1; //move o swap
             for (int j = 1; j < 3; ++j) {
                 EstatSensor e = new EstatSensor(100, seed, 4, seed);
                 if (j == 1)

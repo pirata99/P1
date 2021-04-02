@@ -584,6 +584,7 @@ public class EstatSensor {
 //        transmissiones (conexion)
 //        info retransmitida por el sensor al que te conectas
 //        info recibida por los centros
+        //if (evitaCiclos(id_sensor,id_sensor2)) { return;}
         int aux_transmissions = getTransmissionSC(id_sensor);
 //      obtenemos los datos que transmite la rama
         int infoTransmitRama = info_Capturada_SC.get(id_sensor2);
@@ -603,9 +604,11 @@ public class EstatSensor {
 
         actualizaInfoTransmit(id_sensor, infoTransmitRama);
 
-
+        System.out.println("ME QUEDAO AQUI");
 
         ArrayList<Double> newParcialIndic = calculaIndicadoresParcialesSwap(id_sensor);
+
+        System.out.println("AQUI2");
 
 //      hacemos el swap, actualizamos la info transmitida y calculamos el nuevo coste de stransmitir
         transmissionesSC.set(id_sensor2, aux_transmissions);
@@ -620,6 +623,25 @@ public class EstatSensor {
         info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
         System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
 
+    }
+
+    private boolean evitaCiclos (int id_sensor1, int id_sensor2) {
+        int next = transmissionesSC.get(id_sensor1);
+        int aux = next;
+        boolean bucle = false;
+        while (next < numSensors && !bucle) {
+
+            if (next == id_sensor2) bucle = true;
+            else next = transmissionesSC.get(next);
+
+        }
+        next = transmissionesSC.get(id_sensor2);
+        while (next < numSensors && !bucle) {
+            if (next == id_sensor1) bucle = true;
+            else next = transmissionesSC.get(next);
+        }
+
+        return bucle;
     }
 
     public void mover_Sensor (int id_sensor) {
