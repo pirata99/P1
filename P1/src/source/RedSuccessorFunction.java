@@ -23,7 +23,7 @@ public class RedSuccessorFunction  implements SuccessorFunction {
 
         EstatSensor sucessor = new EstatSensor(state);
         int k = 0;
-        while (nomillora) {
+        //while (nomillora) {
             nomillora = false;
             double heur = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) sucessor.info_perduda);
             for (int i = 0; i < numSensores; ++i) {
@@ -53,8 +53,7 @@ public class RedSuccessorFunction  implements SuccessorFunction {
                     Successor su = new Successor("action", res.get(res.size()-1));
                     k++;
                 }
-                else System.out.println("No si al final me he liado a hacer " + k +" iteraciones y el coste final es " + sucessor.cost_transmissio);
-        }
+      //  }
         return res;
     }
 }

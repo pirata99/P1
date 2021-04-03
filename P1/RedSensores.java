@@ -31,6 +31,7 @@ public class RedSensores {
         System.out.println("Terminar programa: 0");
 
         int op = in.nextInt();
+
         while (op != 0 && op != 1 && op != 2 && op != 3) {
             System.out.println("Introduce un valor correcto: 0, 1, 2 o 3");
             op = in.nextInt();
@@ -90,7 +91,7 @@ public class RedSensores {
                 int numSens = in.nextInt();
 
                 EstatSensor estat;
-                System.out.println("A continuación, elije la solución inicial");
+                System.out.println("A continuación, elige la solución inicial");
                 System.out.println("1: Sensores se conectan a centros más cercanos, lo que no cabe es random");
                 System.out.println("2: Todo random");
                 int solIni = in.nextInt();
@@ -107,8 +108,14 @@ public class RedSensores {
                         estat = new EstatSensor(numSens, seed, numCent, seed);
                         estat.EstatInicial_2();
                 }
+                /*
+                System.out.println("A continuación, elige un operador");
+                System.out.println("1: Swap entre sensores");
+                System.out.println("2: Un sensor cambia de conexion a otro sensor o centro");
+                */
 
 
+                //int op = in.nextInt();
                 if (op == 1)
                         BusquedaHillClimbing(estat);
                 else
