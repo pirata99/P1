@@ -182,7 +182,6 @@ public class RedSensores {
         ++numIteracions;
 
          */
-
         return (((EstatSensor) search.getGoalState()).getHeuristic((float) costMin, (float) infoPerd));
     }
 

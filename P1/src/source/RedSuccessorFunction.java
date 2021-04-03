@@ -33,10 +33,11 @@ public class RedSuccessorFunction  implements SuccessorFunction {
                 double costAnteriorI = state.getCost_All(i);
                  */
                 for (int j = i + 1; j < numSensores; ++j) {
-                    if (estadoValido && (sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(j)) && (sucessor.transmissionesSC.get(i) != j && i != sucessor.transmissionesSC.get(j))) {
+                    if (estadoValido && (sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(j)) && (sucessor.transmissionesSC.get(i) != j &&
+                            i != sucessor.transmissionesSC.get(j)) && !sucessor.evitaCiclos(i, j)) {
                         sucessor.swap(i, j);
                         //sucessor.moveSensor(i);
-                        double heur2 = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) state.info_perduda);
+                        double heur2 = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) sucessor.info_perduda);
                         if (heur2 < heur) {
                             res.add(new Successor("sensor " + i + " ha hecho swap con sensor " + j, sucessor));
                             System.out.println("Lo acabo de guardar");

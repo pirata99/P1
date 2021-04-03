@@ -334,6 +334,8 @@ public class EstatSensor {
 
     public double getHeuristic(float p_cost, float p_loss) {
 //      devuelve es heuristico ponderado de nuestros indicadores
+        calculaHeuristic();
+        System.out.println("el cost es "+ cost_transmissio +" y la info es " + info_perduda);
         return (p_cost * cost_transmissio + info_perduda * p_loss);
     }
 
@@ -346,6 +348,7 @@ public class EstatSensor {
         double cost_trans = 0;
         cost_transmissio = 0;
         info_perduda = 0;
+
         for (int i = 0; i < numSensors; i++){
             int infoEnvia = info_Capturada_SC.get(i);
             int infoMax = maxCapacidadEnviada.get(i)*3;
@@ -375,8 +378,11 @@ public class EstatSensor {
 
             double dist_orig_dest = distSC(s_origen_X,s_origen_Y, s_dest_X, s_dest_Y);
             cost_trans = costDist(dist_orig_dest, (int) infoEnvia);
+            System.out.println("-----------------------" + infoEnvia +"-----------------------------");
 
+            if (infoEnvia < 0) System.exit(0);
             cost_transmissio += cost_trans;
+            //if (cost_transmissio < 0) System.exit(0);
             info_perduda += info_perdida;
         }
 
@@ -460,6 +466,7 @@ public class EstatSensor {
         int suma = maxCapacidadEnviada.get(nextSensor);
         //empezamos por el siguiente de partida
         while (nextSensor < numSensors) {
+            System.out.println("PETA EN ACTUALIZA " + nextSensor);
             //sumamos los datos que envia el sensor solo
             suma += maxCapacidadEnviada.get(nextSensor);
             info_Capturada_SC.set(nextSensor, infoPrimera + suma - capacitatSubstract);
@@ -593,6 +600,53 @@ public class EstatSensor {
 
 
 //      guardamos el coste de transmitir que tenemos antes del swap para cada sensor implicado
+        //ArrayList<Double> oldParcialIndic = calculaIndicadoresParcialesSwap(id_sensor);
+
+        //ArrayList<Double> oldParcialIndic2 = calculaIndicadoresParcialesSwap(id_sensor2);
+
+
+
+//      hacemos el swap, actualizamos la info transmitida y calculamos el nuevo coste de stransmitir
+        transmissionesSC.set(id_sensor, getTransmissionSC(id_sensor2));
+
+        actualizaInfoTransmit(id_sensor, infoTransmitRama);
+
+        System.out.println("ME QUEDAO AQUI");
+
+        //ArrayList<Double> newParcialIndic = calculaIndicadoresParcialesSwap(id_sensor);
+
+        System.out.println("AQUI2");
+
+//      hacemos el swap, actualizamos la info transmitida y calculamos el nuevo coste de stransmitir
+        transmissionesSC.set(id_sensor2, aux_transmissions);
+        actualizaInfoTransmit(id_sensor2, infoTransmitRama2);
+        //ArrayList<Double> newParcialIndic2 = calculaIndicadoresParcialesSwap(id_sensor2);
+
+        System.out.println("ACABO DE hacer swap DEL ELEMENTO " + id_sensor +" al " + id_sensor2);
+
+//      actualizamos el coste y la infoperdida
+        //calculaHeuristic();
+        //cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
+        //info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
+        //System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
+
+    }
+
+    public void swap2 (int id_sensor, int id_sensor2) {
+//        En esta accion se intercambian sensores
+//        hay que actualizar:
+//        transmissiones (conexion)
+//        info retransmitida por el sensor al que te conectas
+//        info recibida por los centros
+        if (evitaCiclos(id_sensor,id_sensor2)) { return;}
+        int aux_transmissions = getTransmissionSC(id_sensor);
+//      obtenemos los datos que transmite la rama
+        int infoTransmitRama = info_Capturada_SC.get(id_sensor2);
+        int infoTransmitRama2 = info_Capturada_SC.get(id_sensor);
+
+
+
+//      guardamos el coste de transmitir que tenemos antes del swap para cada sensor implicado
         ArrayList<Double> oldParcialIndic = calculaIndicadoresParcialesSwap(id_sensor);
 
         ArrayList<Double> oldParcialIndic2 = calculaIndicadoresParcialesSwap(id_sensor2);
@@ -625,23 +679,22 @@ public class EstatSensor {
 
     }
 
-    private boolean evitaCiclos (int id_sensor1, int id_sensor2) {
+    public boolean evitaCiclos (int id_sensor1, int id_sensor2) {
         int next = transmissionesSC.get(id_sensor1);
         int aux = next;
         boolean bucle = false;
-        while (next < numSensors && !bucle) {
+        while (next < numSensors) {
 
-            if (next == id_sensor2) bucle = true;
-            else next = transmissionesSC.get(next);
+            if (next == id_sensor2) return true;
+            next = transmissionesSC.get(next);
 
         }
         next = transmissionesSC.get(id_sensor2);
-        while (next < numSensors && !bucle) {
-            if (next == id_sensor1) bucle = true;
-            else next = transmissionesSC.get(next);
+        while (next < numSensors) {
+            if (next == id_sensor1) return true;
+            next = transmissionesSC.get(next);
         }
-
-        return bucle;
+        return false;
     }
 
     public void mover_Sensor (int id_sensor) {
