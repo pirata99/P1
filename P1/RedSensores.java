@@ -47,7 +47,12 @@ public class RedSensores {
                 }
                 switch (op) {
                     case 1:
-                        experimento1();
+                        System.out.println("Qué operador deseas realizar? ");
+                        System.out.println("Move Sensores 1");
+                        System.out.println("Swap Sensores 2");
+                        System.out.println("Ambos 3");
+                        int ope = in.nextInt();
+                        experimento1(ope);
                         break;
                     case 2:
                         experimento2();
@@ -167,7 +172,7 @@ public class RedSensores {
         ArrayList<Double> info = RedSuccessorFunction.infoPerdudaMillor;
         double costMin = 0;
         double infoPerd = 0;
-        if (cost.size() > 0) {
+         if (cost.size() > 0) {
             for (int i = cost.size() - 1; i < cost.size(); ++i) costMin = cost.get(i);
             for (int i = info.size()-1; i < info.size(); ++i) infoPerd = info.get(i);
         }
@@ -202,20 +207,35 @@ public class RedSensores {
         return (((EstatSensor) search.getGoalState()).getHeuristic((float) 0.5,(float) 0.5));
     }
 
-    private static void experimento1() throws Exception {
+    private static void experimento1(int op) throws Exception {
         ArrayList<Double> c1 = new ArrayList<>(); //coste op1
         ArrayList<Double> c2 = new ArrayList<>(); //coste op2
+        ArrayList<Double> c3 = new ArrayList<>(); //coste op2
         ArrayList<Long> t1 = new ArrayList<>(); //tiempo op1
         ArrayList<Long> t2 = new ArrayList<>(); //tiempo op2
+        ArrayList<Long> t3 = new ArrayList<>(); //tiempo op2
 
-        Random random = new Random();
+        ArrayList<Integer> seeds = new ArrayList<>() ; //seeds
+
+        seeds.add(3294);
+        seeds.add(1918);
+        seeds.add(9340);
+        seeds.add(370);
+        seeds.add(2244);
+        seeds.add(7699);
+        seeds.add(428);
+        seeds.add(8614);
+        seeds.add(2433);
+        seeds.add(6579);
+
+
+        // Random random = new Random();
 
         for (int i = 0; i < 10; ++i) {
-            int seed = random.nextInt(10000);
-            int op = 1; //op swap o op move
-            for (int j = 1; j < 3; ++j) {
-                EstatSensor estat = new EstatSensor(100, seed, 4, seed);
-                estat.EstatInicial_2();
+
+            for (int j = op; j < 4; ++j) {
+                EstatSensor estat = new EstatSensor(100, seeds.get(i), 4, seeds.get(i));
+                estat.EstatInicial_1();
 
                 long ini = System.currentTimeMillis();
                 double coste = BusquedaHillClimbing(estat);
@@ -232,7 +252,9 @@ public class RedSensores {
             }
         }
 
-
+        for (int j = 0; j < seeds.size(); ++j) {
+            System.out.println("Seed " + j + ": " + seeds.get(j));
+        }
         for (int i = 0; i < c1.size(); ++i) {
             c1.set(i, (double)Math.round(c1.get(i) * 100d) / 100d);
             c2.set(i, (double)Math.round(c1.get(i) * 100d) / 100d);
@@ -332,29 +354,44 @@ public class RedSensores {
         chart.setVisible(true);
     }
     private static void experimento4() throws Exception {
-        Sensores s = new Sensores(100,1234);
-        CentrosDatos cd = new CentrosDatos(2,4567);
 
-        int numSensores = 50;
-        int seed = 1234;
-        int numCent = 1;
-        int seedC = 4567;
+        ArrayList<Double> c1 = new ArrayList<>();
+        ArrayList<Long> t1 = new ArrayList<>();
+        int numSensores = 100;
+//        int seed = 1234;
+        int numCent = 4;
+
+//        int seedC = 1234;
 //        System.out.println(args[1]);
 //        int tipoIni = Integer.parseInt(args[1]);
         int tipoIni = 2;
-        EstatSensor estat = new EstatSensor(numSensores, seed, numCent, seedC);
-        boolean valido= estat.estadoValido();
+        Random r = new Random();
+        for (int i = 0; i < 46; ++i) {
+            EstatSensor estat = new EstatSensor(numSensores, 3294, numCent, 3294);
+            estat.EstatInicial_2();
+            long ini = System.currentTimeMillis();
+            double coste = BusquedaHillClimbing(estat);
+            long fin = System.currentTimeMillis();
+            c1.add(coste);
+            t1.add(fin - ini);
+            numCent +=2;
+        }
 
-        System.out.println(valido);
+        for (int i = 0; i < c1.size(); ++i) {
+            c1.set(i, (double)Math.round(c1.get(i) * 100d) / 100d);
+        }
+
+        System.out.println("c1: " + c1);
+        System.out.println("t1: " + t1);
     }
 
-    private static void experimento5() throws Exception {
-        Sensores s = new Sensores(100,1234);
-        CentrosDatos cd = new CentrosDatos(2,4567);
 
-        int numSensores = 50;
+    private static void experimento5() throws Exception {
+
+
+        int numSensores = 1;
         int seed = 1234;
-        int numCent = 1;
+        int numCent = 6;
         int seedC = 4567;
 //        System.out.println(args[1]);
 //        int tipoIni = Integer.parseInt(args[1]);
@@ -366,20 +403,31 @@ public class RedSensores {
     }
 
     private static void experimento6() throws Exception {
-        Sensores s = new Sensores(100,1234);
-        CentrosDatos cd = new CentrosDatos(2,4567);
 
-        int numSensores = 50;
-        int seed = 1234;
-        int numCent = 1;
-        int seedC = 4567;
-//        System.out.println(args[1]);
-//        int tipoIni = Integer.parseInt(args[1]);
-        int tipoIni = 2;
-        EstatSensor estat = new EstatSensor(numSensores, seed, numCent, seedC);
-        boolean valido= estat.estadoValido();
 
-        System.out.println(valido);
+        ArrayList<Double> c1 = new ArrayList<>();
+        ArrayList<Long> t1 = new ArrayList<>();
+        int numSensores = 100;
+//        int seed = 1234;
+        int numCent = 2;
+
+        for (int i = 0; i < 5; ++i) {
+            EstatSensor estat = new EstatSensor(numSensores, 4321, numCent, 1234);
+            estat.EstatInicial_2();
+            long ini = System.currentTimeMillis();
+            double coste = BusquedaHillClimbing(estat);
+            long fin = System.currentTimeMillis();
+            c1.add(coste);
+            t1.add(fin - ini);
+            numCent +=2;
+        }
+
+        for (int i = 0; i < c1.size(); ++i) {
+            c1.set(i, (double)Math.round(c1.get(i) * 100d) / 100d);
+        }
+
+        System.out.println("c1: " + c1);
+        System.out.println("t1: " + t1);
     }
 
     private static void experimento7() throws Exception {

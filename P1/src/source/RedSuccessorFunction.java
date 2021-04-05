@@ -17,32 +17,35 @@ public class RedSuccessorFunction  implements SuccessorFunction {
         EstatSensor state = (EstatSensor) redState;
         boolean estadoValido = state.estadoValido();
 
-
+        int count = 0;
         int numSensores = state.getNumSensors();
-
+        int numCent = state.getNumCentros();
 
 
 //            double heur = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) sucessor.info_perduda);
 
         for (int i = 0; i < numSensores; ++i) {
 
-            for (int j = i + 1; j < numSensores; ++j) {
+            for (int j = i + 1; j < numSensores+numCent; ++j) {
                 EstatSensor sucessor = new EstatSensor(state);
-                //SWAP
+
                 if ((sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(j)) && (sucessor.transmissionesSC.get(i) != j &&
                         i != sucessor.transmissionesSC.get(j)) && !sucessor.evitaCiclos(i, j)) {
-                    sucessor.moverSensor(i, j);
-                    //sucessor.estadoSens();
+                    if (j >= numSensores && state.getNConexionesCD(j) < 25) {
+                        sucessor.moverSensor(i, j);
+                        //sucessor.estadoSens();
 
 //                    sucessor.estadoSens();
-                    //sucessor.calculaHeuristic();
+                        //sucessor.calculaHeuristic();
 //                    System.exit(0);
 //                       sucessor.moverSensor(i, j);
 //                        double heur2 = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) sucessor.info_perduda);
-                    res.add(new Successor("sensor " + i + " ha hecho swap con sensor " + j, sucessor));
+                        res.add(new Successor("sensor " + i + " ha hecho swap con sensor " + j, sucessor));
+                        ++count;
 //                    System.out.println("Lo acabo de guardar");
 //                        costosMillors.add(sucessor.cost_transmissio);
 //                        infoPerdudaMillor.add(sucessor.info_perduda);
+                    }
                 }
             }
 /*
@@ -69,8 +72,9 @@ public class RedSuccessorFunction  implements SuccessorFunction {
 */
 
         }
+        System.out.println("NUMERO DE SUCESORES: " + count);
         //System.exit(0);
-     System.out.println("SALGO");
+     //System.out.println("SALGO");
         return res;
     }
 }
