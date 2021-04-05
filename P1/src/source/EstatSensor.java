@@ -248,22 +248,24 @@ public class EstatSensor {
                 }
             }
         }
-//        for(int i = 0; i < numCentros + numSensors; i++){
-//            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
-//
-//        }
+        for(int i = 0; i < numCentros + numSensors; i++){
+            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
+
+        }
         int sensor_a_restar = getConectedToMoreThanTwo();
         if(sensor_a_restar >= 0) {
-//            System.out.println("EL QUE VAMOS A RESTAR ES: " + sensor_a_restar);
-            actualizaInfoResta(sensor_a_restar);
+            System.out.println("EL QUE VAMOS A RESTAR ES: " + sensor_a_restar);
+  //          actualizaInfoResta(sensor_a_restr);
         }
         else System.out.println("--- NO HAY MAS DE DOS SEGUIDOS ---");
-//        System.out.println("-----------DESPUES DE RESTAR-----------");
-//        for(int i = 0; i < numCentros + numSensors; i++){
-//            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
-//
-//        }
-//        System.out.println("el cost del estat ini es " + cost_transmissio);
+        System.out.println("-----------DESPUES DE RESTAR-----------");
+        for(int i = 0; i < numCentros + numSensors; i++){
+            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
+
+        }
+        System.exit(1);
+        System.out.println("el cost del estat ini es " + cost_transmissio);
+
         calculaHeuristic();
     }
 
@@ -274,7 +276,7 @@ public class EstatSensor {
             int nextSensor = transmissionesSC.get(i);
             while(nextSensor < numSensors){
                 ++j;
-                if (j > 1) return i;
+                if (j <2) return i;
                 nextSensor = transmissionesSC.get(nextSensor);
             }
         }
@@ -299,7 +301,7 @@ public class EstatSensor {
 
     private boolean checkMaxConexiones(int nextSensor){
         //devuelve true si es correcto
-       // System.out.println("Sensor "+ nextSensor+ "con num" +getNConexionesCD(nextSensor));
+        // System.out.println("Sensor "+ nextSensor+ "con num" +getNConexionesCD(nextSensor));
         if(nextSensor<numSensors) return getNConexionesCD(nextSensor) > 3;
         else return getNConexionesCD(nextSensor) > 25;
     }
@@ -353,7 +355,7 @@ public class EstatSensor {
     public double getHeuristic(float p_cost, float p_loss) {
 //      devuelve es heuristico ponderado de nuestros indicadores
         calculaHeuristic();
-        System.out.println("el cost es "+ cost_transmissio +" y la info es " + info_perduda);
+        //System.out.println("el cost es "+ cost_transmissio +" y la info es " + info_perduda);
         return (p_cost * cost_transmissio + info_perduda * p_loss);
     }
 
@@ -408,8 +410,8 @@ public class EstatSensor {
 
             //System.out.println("-----------------------" + infoEnvia +"-----------------------------");
             if (infoEnvia < 0) {
-                System.out.print(infoEnvia + " en el sensor " +  i + " i la capacidad max es" + infoMax);
-//                System.exit(0);
+                System.out.println(infoEnvia + " en el sensor " +  i + " i la capacidad max es" + infoMax);
+               System.exit(0);
             }
 
         }
@@ -420,7 +422,7 @@ public class EstatSensor {
         cost_transmissio = cost_trans;
         info_perduda = info_perdida;
 
-        System.out.println("El coste de transmision inicial es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
+       // System.out.println("El coste de transmision inicial es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
     }
 
     /*OPERADORES*/
@@ -475,7 +477,6 @@ public class EstatSensor {
                 int new_storageAnterior = getInfoEmmagatzemadaSC(sensorAnterior) - getInfoEmmagatzemadaSC(id_sensor);
                 numConectadosSC.set(sensorAnterior, countAnt);
                 info_Capturada_SC.set(sensorAnterior, new_storageAnterior);
-
                 int countNew = getNConexionesCD(Sensor_cercano) + 1;
                 int new_storageNew = getInfoEmmagatzemadaSC(Sensor_cercano) + getInfoEmmagatzemadaSC(id_sensor);
                 numConectadosSC.set(Sensor_cercano, countNew);
@@ -500,7 +501,6 @@ public class EstatSensor {
                 int new_storageAnterior = getInfoEmmagatzemadaSC(SensorAnterior) - getInfoEmmagatzemadaSC(id_sensor);
                 numConectadosSC.set(SensorAnterior, countAnt);
                 info_Capturada_SC.set(SensorAnterior, new_storageAnterior);
-
                 int countNew = getNConexionesCD(Sensor_cercano) + 1;
                 int new_storageNew = getInfoEmmagatzemadaSC(Sensor_cercano) + getInfoEmmagatzemadaSC(id_sensor);
                 numConectadosSC.set(Sensor_cercano, countNew);
@@ -510,7 +510,6 @@ public class EstatSensor {
             }
         }
     }
-
      */
 
     private ArrayList<Double> calculaIndicadoresParcialesSwap(int id_sensor){
@@ -569,12 +568,12 @@ public class EstatSensor {
 
     public void moverSensor(int id_sensor_origen, int id_sensor_destino){
 
-        actualizaInfoResta(id_sensor_origen);
+        actualizaInfoResta(id_sensor_origen); //AQUI ES DONDE PETA
 //        actualizaNumConectados(transmissionesSC.get(id_sensor_origen), -1);
         actualizaNumConectados(transmissionesSC.get(id_sensor_origen), -1);
 
         transmissionesSC.set(id_sensor_origen, id_sensor_destino);
-        actualizaInfoSuma(id_sensor_origen);
+        actualizaInfoSuma(id_sensor_origen); //POSIBLE PELIGRO
         actualizaNumConectados(id_sensor_destino, 1);
 
     }
@@ -595,9 +594,18 @@ public class EstatSensor {
         moverSensorDeSwap(id_sensor2, guarda_id_sensor);
 
     }
+    private void conexiones(int id){
+        int next =getTransmissionSC(id);
+        while(next<numSensors){
+            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(next) +" info enviada: " + Math.min(info_Capturada_SC.get(next), maxCapacidadEnviada.get(next)*3) + " sensor: " + next);
+            next=getTransmissionSC(next);
+        }
+    }
+
 
     public void estadoSens () {
         for(int i = 0; i < numCentros + numSensors; i++){
+            if(info_Capturada_SC.get(i)<0) conexiones(i);
             System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
 
         }
@@ -650,7 +658,7 @@ public class EstatSensor {
 //        cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
 //        info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
         calculaHeuristic();
-        System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
+        //System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
 
     }
 
@@ -706,7 +714,31 @@ public class EstatSensor {
 
         int InfoEnviaSigPost = 0;
 
+        if(info_Capturada_SC.get(nextSensor) - infoEnviaB<0) {
+            System.out.println("Peta en el sensor " + id_sensor);
+            ArrayList<Integer> Camino= new ArrayList<>();
+            ArrayList<Integer> Aux =new ArrayList<>();
+            int nextsensor2= id_sensor;
+            while(numConectadosSC.get(nextsensor2)!=0) {
+                    nextsensor2=transmissionesSC.indexOf(nextsensor2);
+                    Aux.add(nextsensor2);
+            }
+            for(int i= Aux.size()-1; 0<i  ;i--){
+            Camino.add(Aux.get(i));
+            }
+            Camino.add(id_sensor);
+            nextSensor=transmissionesSC.get(id_sensor);
+            while(nextSensor<numSensors) {
+                Camino.add(nextSensor);
+                nextSensor=transmissionesSC.get(nextSensor);
+            }
+            for(int j=0; j<Camino.size(); j++){
+                System.out.println("Sensor "+ Camino.get(j) + " con info "+ info_Capturada_SC.get(Camino.get(j))+
+                        " e infoEnviaB "+ Math.min(info_Capturada_SC.get(Camino.get(j)),maxCapacidadEnviada.get(Camino.get(j))*3));
+            }
+            System.exit(1);
 
+        }
         info_Capturada_SC.set(nextSensor, info_Capturada_SC.get(nextSensor) - infoEnviaB);
         int resto = infoCaptS - infoMaxS;
         resto = 0;
@@ -717,6 +749,7 @@ public class EstatSensor {
 //                if(resto < 0) resto = infoEnviaB;
                 int infoCapOld = info_Capturada_SC.get(nextSensor);
 //                infoCapOld = 6
+                if(infoCapOld - resto<0) System.exit(2);
                 info_Capturada_SC.set(nextSensor, infoCapOld - resto);
                 int infoCaptNew = info_Capturada_SC.get(nextSensor);
 
@@ -819,7 +852,7 @@ public class EstatSensor {
         //calculaHeuristic();
         cost_transmissio += newParcialIndic.get(0) + newParcialIndic2.get(0) - oldParcialIndic.get(0) - oldParcialIndic2.get(0);
         info_perduda += newParcialIndic.get(1) + newParcialIndic2.get(1) - oldParcialIndic.get(1) - oldParcialIndic2.get(1);
-        System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
+        //System.out.println("El coste de transmision es "+ cost_transmissio+ " y la perduda es de "+ info_perduda);
 
     }
 
@@ -839,20 +872,6 @@ public class EstatSensor {
             next = transmissionesSC.get(next);
         }
         return false;
-    }
-
-    public void mover_Sensor (int id_sensor) {
-        Random r = new Random();
-        int sensorRandom = r.nextInt(numSensors);
-        if (id_sensor != sensorRandom && (transmissionesSC.get(id_sensor) != transmissionesSC.get(sensorRandom))) {
-            if (checkMaxConexiones(sensorRandom)) {
-                transmissionesSC.set(id_sensor, sensorRandom);
-            }
-
-
-        }
-
-
     }
 
 

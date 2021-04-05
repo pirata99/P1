@@ -23,6 +23,7 @@ public class RedSuccessorFunction  implements SuccessorFunction {
 
 
 //            double heur = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) sucessor.info_perduda);
+
         for (int i = 0; i < numSensores; ++i) {
 
             for (int j = i + 1; j < numSensores; ++j) {
@@ -31,7 +32,7 @@ public class RedSuccessorFunction  implements SuccessorFunction {
                 if ((sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(j)) && (sucessor.transmissionesSC.get(i) != j &&
                         i != sucessor.transmissionesSC.get(j)) && !sucessor.evitaCiclos(i, j)) {
                     sucessor.moverSensor(i, j);
-//                    System.out.println("swap de "+ i +" y " + j);
+                    //sucessor.estadoSens();
 
 //                    sucessor.estadoSens();
                     sucessor.calculaHeuristic();
@@ -44,15 +45,18 @@ public class RedSuccessorFunction  implements SuccessorFunction {
 //                        infoPerdudaMillor.add(sucessor.info_perduda);
                 }
             }
-
-            //MOVE
+/*
             for (int k = i + 1; k < numSensores; ++k) {
                 EstatSensor sucessor = new EstatSensor(state);
+
                 if ((sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(k)) && (sucessor.transmissionesSC.get(i) != k &&
                         i != sucessor.transmissionesSC.get(k)) && !sucessor.evitaCiclos(i, k)) {
 
                     sucessor.swapFreestyle(i, k);
-//                    sucessor.estadoSens();
+                    //state.estadoSens();
+                    //System.out.println("swap sensor " + i + " e " + k);
+                    //sucessor.estadoSens();
+
                     sucessor.calculaHeuristic();
 //                        double heur2 = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) sucessor.info_perduda);
                     res.add(new Successor("sensor " + i + " ha hecho swap con sensor " + k, sucessor));
@@ -62,7 +66,7 @@ public class RedSuccessorFunction  implements SuccessorFunction {
                 }
 
             }
-
+*/
 
         }
         //System.exit(0);
