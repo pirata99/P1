@@ -121,10 +121,18 @@ public class RedSensores {
 
 
                 //int op = in.nextInt();
-                if (op == 1)
-                        BusquedaHillClimbing(estat);
-                else
-                        BusquedaSimulatedAnnealing(estat, 10000, 100, 25, 0.0001);
+                if (op == 1) {
+                    long ini = System.currentTimeMillis();
+                    BusquedaHillClimbing(estat);
+                    long fin = System.currentTimeMillis();
+                    System.out.println("El tiempo de ejecución es " + (fin-ini));
+                }
+                else {
+                    long ini = System.currentTimeMillis();
+                    BusquedaSimulatedAnnealing(estat, 100, 100, 25, 0.01);
+                    long fin = System.currentTimeMillis();
+                    System.out.println("El tiempo de ejecución es " + (fin-ini));
+                }
 
                     System.out.println("Que deseas realizar?");
                     System.out.println("Hill Climbing: 1");

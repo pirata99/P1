@@ -72,7 +72,7 @@ public class RedSuccessorFunction  implements SuccessorFunction {
 */
 
         }
-        System.out.println("NUMERO DE SUCESORES: " + count);
+        //System.out.println("NUMERO DE SUCESORES: " + count);
         //System.exit(0);
      //System.out.println("SALGO");
         return res;
