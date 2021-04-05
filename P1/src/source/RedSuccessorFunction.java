@@ -35,7 +35,7 @@ public class RedSuccessorFunction  implements SuccessorFunction {
                     //sucessor.estadoSens();
 
 //                    sucessor.estadoSens();
-                    sucessor.calculaHeuristic();
+                    //sucessor.calculaHeuristic();
 //                    System.exit(0);
 //                       sucessor.moverSensor(i, j);
 //                        double heur2 = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) sucessor.info_perduda);
@@ -70,7 +70,7 @@ public class RedSuccessorFunction  implements SuccessorFunction {
 
         }
         //System.exit(0);
-
+     System.out.println("SALGO");
         return res;
     }
 }
