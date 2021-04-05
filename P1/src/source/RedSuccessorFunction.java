@@ -33,10 +33,10 @@ public class RedSuccessorFunction  implements SuccessorFunction {
                 double costAnteriorI = state.getCost_All(i);
                  */
                 for (int j = i + 1; j < numSensores; ++j) {
-                    if (estadoValido && (sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(j)) && (sucessor.transmissionesSC.get(i) != j &&
+                    if ((sucessor.transmissionesSC.get(i) != sucessor.transmissionesSC.get(j)) && (sucessor.transmissionesSC.get(i) != j &&
                             i != sucessor.transmissionesSC.get(j)) && !sucessor.evitaCiclos(i, j)) {
-                        sucessor.swap(i, j);
-                        //sucessor.moveSensor(i);
+                        sucessor.swapFreestyle(i, j);
+//                        sucessor.moverSensor(i, j);
                         double heur2 = sucessor.getHeuristic((float) sucessor.cost_transmissio, (float) sucessor.info_perduda);
                         if (heur2 < heur) {
                             res.add(new Successor("sensor " + i + " ha hecho swap con sensor " + j, sucessor));
@@ -45,14 +45,14 @@ public class RedSuccessorFunction  implements SuccessorFunction {
                             costosMillors.add(sucessor.cost_transmissio);
                             infoPerdudaMillor.add(sucessor.info_perduda);
                             nomillora = true;
-                        } else sucessor.swap(j, i);
+                        } else sucessor.moverSensor(j, i);
                     }
                 }
             }
-                if (nomillora) {
-                    Successor su = new Successor("action", res.get(res.size()-1));
-                    k++;
-                }
+            if (nomillora) {
+                Successor su = new Successor("action", res.get(res.size()-1));
+                k++;
+            }
       //  }
         return res;
     }
