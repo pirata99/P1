@@ -20,7 +20,7 @@ public class Grafica extends JFrame {
         DefaultCategoryDataset dataset = createDataset(costes, k);
         // Create chart
         JFreeChart chart = ChartFactory.createBarChart(
-                "Experimentos con k y λ", // Chart title
+                "Evaluación de experimentos con valores k y λ", // Chart title
                 "k", // X-Axis Label
                 "coste", // Y-Axis Label
                 dataset,

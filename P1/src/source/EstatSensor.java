@@ -4,9 +4,11 @@ import IA.Red.Centro;
 import IA.Red.CentrosDatos;
 import IA.Red.Sensor;
 import IA.Red.Sensores;
-import IA.Red.Centro;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
 
 public class EstatSensor {
 
@@ -240,28 +242,28 @@ public class EstatSensor {
                         double dist = distSC(sens.get(s).getCoordX(), sens.get(s).getCoordY(), sens.get(sensorRandom).getCoordX(), sens.get(sensorRandom).getCoordY());
                         cost_transmissio += Math.pow(dist, 2) * (sens.get(s).getCapacidad() + getInfoEmmagatzemadaSC(s)); //DIST^2 X volumenDadesS
                         trobat = true;
-                        System.out.println("El sensor" +s+ " se ha conectado al sensor " + sensorRandom);
+                        System.out.println("El sensor" +s+ " se ha conectado al sensor " + sensorRandom + " y este tiene coordenadas " + sens.get(s).getCoordX() +" , " +sens.get(s).getCoordY());
 
                     }
                 }
             }
         }
-        for(int i = 0; i < numCentros + numSensors; i++){
-            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
-
-        }
+//        for(int i = 0; i < numCentros + numSensors; i++){
+//            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
+//
+//        }
         int sensor_a_restar = getConectedToMoreThanTwo();
         if(sensor_a_restar >= 0) {
-            System.out.println("EL QUE VAMOS A RESTAR ES: " + sensor_a_restar);
+//            System.out.println("EL QUE VAMOS A RESTAR ES: " + sensor_a_restar);
             actualizaInfoResta(sensor_a_restar);
         }
         else System.out.println("--- NO HAY MAS DE DOS SEGUIDOS ---");
-        System.out.println("-----------DESPUES DE RESTAR-----------");
-        for(int i = 0; i < numCentros + numSensors; i++){
-            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
-
-        }
-        System.out.println("el cost del estat ini es " + cost_transmissio);
+//        System.out.println("-----------DESPUES DE RESTAR-----------");
+//        for(int i = 0; i < numCentros + numSensors; i++){
+//            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
+//
+//        }
+//        System.out.println("el cost del estat ini es " + cost_transmissio);
         calculaHeuristic();
     }
 
@@ -356,21 +358,23 @@ public class EstatSensor {
     }
 
 
-    private void calculaHeuristic(){
+    public void calculaHeuristic(){
 //      esta funcion deberia de ser llamada para calcular inicialmente el el coste y info perdida general
 //      se puede actualizar el valor de estas variables facilmente en al hacer una operación
 
         int info_perdida = 0;
         double cost_trans = 0;
-        //cost_transmissio = 0;
-        //info_perduda = 0;
+        cost_transmissio = 0;
+        info_perduda = 0;
 
         for (int i = 0; i < numSensors; i++){
 
 //            int infoEnvia = (int) (info_Capturada_SC.get(i)- sens.get(i).getCapacidad());
-            int infoEnvia = (int) info_Capturada_SC.get(i);
-            int infoMax = maxCapacidadEnviada.get(i)*3;
-            int perd = infoEnvia - infoMax;
+            int infoEnvia =  info_Capturada_SC.get(i); //infoEnvia es igual a 1
+
+            int infoMax = maxCapacidadEnviada.get(i)*3; //3
+
+            int perd = infoEnvia - infoMax; //-2
             //System.out.println("lo maximo que puedo recibir es " + infoMax +" pero al final recibo " + infoEnvia);
             //si hay perdidas
             if(perd > 0) {
@@ -380,11 +384,12 @@ public class EstatSensor {
             }
 
             //System.out.println("sensor " + i +" pierde "+ info_perdida);
-            Sensor sens_temp_origen = sens.get(i);
+            Sensor sens_temp_origen = sens.get(i); //sens 0
             int s_origen_X = sens_temp_origen.getCoordX();
             int s_origen_Y = sens_temp_origen.getCoordY();
 
-            int destino = transmissionesSC.get(i);
+//            if (i == 0 || i == 25) System.out.println("quiero " + transmissionesSC.get(i));
+            int destino = transmissionesSC.get(i); //14
             int s_dest_X = -1;
             int s_dest_Y = -1;
             if(destino < numSensors) {
@@ -565,6 +570,7 @@ public class EstatSensor {
     public void moverSensor(int id_sensor_origen, int id_sensor_destino){
 
         actualizaInfoResta(id_sensor_origen);
+//        actualizaNumConectados(transmissionesSC.get(id_sensor_origen), -1);
         actualizaNumConectados(transmissionesSC.get(id_sensor_origen), -1);
 
         transmissionesSC.set(id_sensor_origen, id_sensor_destino);
@@ -588,6 +594,13 @@ public class EstatSensor {
         moverSensorDeSwap(id_sensor, transmissionesSC.get(id_sensor2));
         moverSensorDeSwap(id_sensor2, guarda_id_sensor);
 
+    }
+
+    public void estadoSens () {
+        for(int i = 0; i < numCentros + numSensors; i++){
+            System.out.println("info_Capturada_SC: " + info_Capturada_SC.get(i) +" info enviada: " + Math.min(info_Capturada_SC.get(i), maxCapacidadEnviada.get(i)*3) + " sensor: " + i);
+
+        }
     }
 
     public void swap (int id_sensor, int id_sensor2) {

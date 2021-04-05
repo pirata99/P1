@@ -176,20 +176,7 @@ public class RedSensores {
             System.out.println("InfoPerduda = " + infoPerd);
         }
 
-        /*
-        FileWriter fichero;
-        fichero = new FileWriter("prova.txt", true);
-        PrintWriter pw = new PrintWriter(fichero);
-
-        if (numIteracions % 20 == 0)
-            pw.println(String.format("%.2f", ((EstatSensor) search.getGoalState()).getHeuristic((float) cost, (float) info_perduda)) + " ");
-        else
-            pw.print(String.format("%.2f", ((EstatSensor) search.getGoalState()).getHeuristic((float) cost, (float) info_perduda)) + " ");
-        fichero.close();
-        ++numIteracions;
-
-         */
-        return (((EstatSensor) search.getGoalState()).getHeuristic((float) costMin, (float) infoPerd));
+        return (((EstatSensor) search.getGoalState()).getHeuristic((float) 0.5, (float) 0.5));
     }
 
     public static double BusquedaSimulatedAnnealing(EstatSensor e, int steps, int stilter, int k, double lambda ) throws Exception {
@@ -212,7 +199,7 @@ public class RedSensores {
 
 
 
-        return (((EstatSensor) search.getGoalState()).getHeuristic((float) costMin,(float) infoPerd));
+        return (((EstatSensor) search.getGoalState()).getHeuristic((float) 0.5,(float) 0.5));
     }
 
     private static void experimento1() throws Exception {
@@ -340,7 +327,7 @@ public class RedSensores {
         Grafica chart = new Grafica(compara, k, l);
         chart.setAlwaysOnTop(true);
         chart.pack();
-        chart.setSize(600, 400);
+        chart.setSize(800, 600);
         chart.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         chart.setVisible(true);
     }
